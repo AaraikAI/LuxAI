@@ -36,6 +36,18 @@ export default function Layout() {
                     Itineraries
                   </Link>
                   <Link
+                    to="/aviation"
+                    className="text-luxury-700 hover:text-luxury-900 transition-colors"
+                  >
+                    Private Aviation
+                  </Link>
+                  <Link
+                    to="/approvals"
+                    className="text-luxury-700 hover:text-luxury-900 transition-colors"
+                  >
+                    Approvals
+                  </Link>
+                  <Link
                     to="/itineraries/new"
                     className="flex items-center space-x-1 btn-primary"
                   >

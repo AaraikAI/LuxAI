@@ -8,6 +8,9 @@ import DashboardPage from '@/pages/DashboardPage';
 import ItinerariesPage from '@/pages/ItinerariesPage';
 import ItineraryDetailPage from '@/pages/ItineraryDetailPage';
 import CreateItineraryPage from '@/pages/CreateItineraryPage';
+import PrivateAviationPage from '@/pages/PrivateAviationPage';
+import ApprovalsPage from '@/pages/ApprovalsPage';
+import KYCVerificationPage from '@/pages/KYCVerificationPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -50,6 +53,30 @@ function App() {
           element={
             <ProtectedRoute>
               <ItineraryDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="aviation"
+          element={
+            <ProtectedRoute>
+              <PrivateAviationPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="approvals"
+          element={
+            <ProtectedRoute>
+              <ApprovalsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="kyc"
+          element={
+            <ProtectedRoute>
+              <KYCVerificationPage />
             </ProtectedRoute>
           }
         />

@@ -45,6 +45,7 @@ export const config = {
   // KYC/AML
   kyc: {
     personaApiKey: process.env.PERSONA_API_KEY || '',
+    personaTemplateId: process.env.PERSONA_TEMPLATE_ID || '',
     onfidoApiKey: process.env.ONFIDO_API_KEY || '',
   },
 

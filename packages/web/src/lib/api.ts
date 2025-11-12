@@ -54,6 +54,39 @@ class ApiClient {
       this.client.patch(`/itineraries/${id}/status`, { status }),
   };
 
+  // KYC endpoints
+  kyc = {
+    initiate: (data: any) => this.client.post('/kyc/initiate', data),
+    checkStatus: (data: any) => this.client.post('/kyc/status', data),
+    uploadDocument: (data: any) => this.client.post('/kyc/document', data),
+    getMyStatus: () => this.client.get('/kyc/me'),
+  };
+
+  // Aviation endpoints
+  aviation = {
+    getProvider: () => this.client.get('/aviation/provider'),
+    submitRFQ: (data: any) => this.client.post('/aviation/rfq', data),
+    getQuote: (rfqId: string) => this.client.get(`/aviation/quote/${rfqId}`),
+    searchEmptyLegs: (params: any) => this.client.post('/aviation/empty-legs/search', params),
+    getAircraft: () => this.client.get('/aviation/aircraft'),
+    bookFlight: (quoteId: string) => this.client.post('/aviation/book', { quoteId }),
+    calculateCarbon: (data: any) => this.client.post('/aviation/carbon-calculator', data),
+  };
+
+  // Approval endpoints
+  approvals = {
+    create: (data: any) => this.client.post('/approvals', data),
+    getPending: () => this.client.get('/approvals/pending'),
+    getHistory: (itineraryId: string) => this.client.get(`/approvals/itinerary/${itineraryId}`),
+    processDecision: (approvalId: string, decision: any) =>
+      this.client.post(`/approvals/${approvalId}/decision`, decision),
+    checkBudget: (itineraryId: string, budgetCap?: number) =>
+      this.client.get(`/approvals/budget-check/${itineraryId}`, {
+        params: budgetCap ? { budgetCap } : undefined,
+      }),
+    initiateWorkflow: (data: any) => this.client.post('/approvals/workflow/initiate', data),
+  };
+
   // Health check
   health = () => this.client.get('/health');
 }
