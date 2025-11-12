@@ -87,6 +87,48 @@ class ApiClient {
     initiateWorkflow: (data: any) => this.client.post('/approvals/workflow/initiate', data),
   };
 
+  // Vendor endpoints
+  vendors = {
+    onboard: (data: any) => this.client.post('/vendors/onboard', data),
+    getProfile: () => this.client.get('/vendors/profile'),
+    createDeal: (data: any) => this.client.post('/vendors/deals', data),
+    getDeals: () => this.client.get('/vendors/deals'),
+    getAnalytics: () => this.client.get('/vendors/analytics'),
+    searchVault: (filters: any) => this.client.get('/vendors/vault/search', { params: filters }),
+  };
+
+  // Payment endpoints
+  payments = {
+    createIntent: (data: any) => this.client.post('/payments/intent', data),
+    confirmPayment: (id: string) => this.client.post(`/payments/intent/${id}/confirm`),
+    releaseEscrow: (id: string) => this.client.post(`/payments/escrow/${id}/release`),
+    refund: (id: string, data: any) => this.client.post(`/payments/refund/${id}`, data),
+    getHistory: () => this.client.get('/payments/history'),
+  };
+
+  // Sustainability endpoints
+  sustainability = {
+    calculate: (data: any) => this.client.post('/sustainability/calculate', data),
+    getReport: (itineraryId: string) => this.client.get(`/sustainability/report/${itineraryId}`),
+    purchaseOffset: (data: any) => this.client.post('/sustainability/offset/purchase', data),
+  };
+
+  // Live Updates endpoints
+  liveUpdates = {
+    create: (data: any) => this.client.post('/live-updates', data),
+    update: (id: string, data: any) => this.client.patch(`/live-updates/${id}`, data),
+    end: (id: string) => this.client.delete(`/live-updates/${id}`),
+    getByItinerary: (itineraryId: string) => this.client.get(`/live-updates/itinerary/${itineraryId}`),
+  };
+
+  // DocuSign endpoints
+  docusign = {
+    createEnvelope: (data: any) => this.client.post('/docusign/envelope', data),
+    getStatus: (id: string) => this.client.get(`/docusign/envelope/${id}/status`),
+    download: (id: string) => this.client.get(`/docusign/envelope/${id}/download`),
+    voidEnvelope: (id: string, reason: string) => this.client.post(`/docusign/envelope/${id}/void`, { reason }),
+  };
+
   // Health check
   health = () => this.client.get('/health');
 }

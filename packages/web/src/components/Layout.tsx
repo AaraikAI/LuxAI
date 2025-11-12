@@ -48,6 +48,18 @@ export default function Layout() {
                     Approvals
                   </Link>
                   <Link
+                    to="/vendor/dashboard"
+                    className="text-luxury-700 hover:text-luxury-900 transition-colors"
+                  >
+                    Vendor Portal
+                  </Link>
+                  <Link
+                    to="/docusign"
+                    className="text-luxury-700 hover:text-luxury-900 transition-colors"
+                  >
+                    DocuSign
+                  </Link>
+                  <Link
                     to="/itineraries/new"
                     className="flex items-center space-x-1 btn-primary"
                   >
@@ -104,6 +116,30 @@ export default function Layout() {
                     className="text-luxury-700 hover:text-luxury-900 transition-colors px-2"
                   >
                     Itineraries
+                  </Link>
+                  <Link
+                    to="/aviation"
+                    className="text-luxury-700 hover:text-luxury-900 transition-colors px-2"
+                  >
+                    Private Aviation
+                  </Link>
+                  <Link
+                    to="/approvals"
+                    className="text-luxury-700 hover:text-luxury-900 transition-colors px-2"
+                  >
+                    Approvals
+                  </Link>
+                  <Link
+                    to="/vendor/dashboard"
+                    className="text-luxury-700 hover:text-luxury-900 transition-colors px-2"
+                  >
+                    Vendor Portal
+                  </Link>
+                  <Link
+                    to="/docusign"
+                    className="text-luxury-700 hover:text-luxury-900 transition-colors px-2"
+                  >
+                    DocuSign
                   </Link>
                   <Link to="/itineraries/new" className="btn-primary w-full">
                     Generate Trip

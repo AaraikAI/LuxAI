@@ -4,6 +4,11 @@ import itineraryRoutes from './itinerary.routes';
 import kycRoutes from './kyc.routes';
 import aviationRoutes from './aviation.routes';
 import approvalRoutes from './approval.routes';
+import vendorRoutes from './vendor.routes';
+import paymentRoutes from './payment.routes';
+import sustainabilityRoutes from './sustainability.routes';
+import liveUpdatesRoutes from './liveUpdates.routes';
+import docusignRoutes from './docusign.routes';
 
 const router = Router();
 
@@ -25,5 +30,10 @@ router.use('/itineraries', itineraryRoutes);
 router.use('/kyc', kycRoutes);
 router.use('/aviation', aviationRoutes);
 router.use('/approvals', approvalRoutes);
+router.use('/vendors', vendorRoutes);
+router.use('/payments', paymentRoutes);
+router.use('/sustainability', sustainabilityRoutes);
+router.use('/live-updates', liveUpdatesRoutes);
+router.use('/docusign', docusignRoutes);
 
 export default router;

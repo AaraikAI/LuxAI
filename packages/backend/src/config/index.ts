@@ -94,6 +94,14 @@ export const config = {
   apiUrl: process.env.API_URL || 'http://localhost:3000',
   webUrl: process.env.WEB_URL || 'http://localhost:5173',
 
+  // DocuSign
+  docusign: {
+    apiKey: process.env.DOCUSIGN_API_KEY || '',
+    accountId: process.env.DOCUSIGN_ACCOUNT_ID || '',
+    baseUrl: process.env.DOCUSIGN_BASE_URL || 'https://demo.docusign.net/restapi',
+    webhookSecret: process.env.DOCUSIGN_WEBHOOK_SECRET || '',
+  },
+
   // Rate Limiting
   rateLimit: {
     windowMs: 15 * 60 * 1000, // 15 minutes
