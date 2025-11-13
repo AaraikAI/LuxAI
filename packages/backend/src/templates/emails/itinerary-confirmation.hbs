@@ -1,0 +1,66 @@
+<h1 style="font-size: 28px; font-weight: 700; color: #1e293b; margin-bottom: 20px;">
+    Your Itinerary is Ready!
+</h1>
+
+<p style="margin-bottom: 20px;">
+    Dear {{clientName}},
+</p>
+
+<p style="margin-bottom: 20px;">
+    We're excited to share that your luxury travel itinerary <strong>"{{itineraryTitle}}"</strong> has been finalized and is ready for your review.
+</p>
+
+<div style="background-color: #f8fafc; padding: 24px; border-radius: 8px; margin: 30px 0;">
+    <h2 style="font-size: 20px; font-weight: 600; color: #1e293b; margin-bottom: 16px;">
+        Itinerary Overview
+    </h2>
+    <table style="width: 100%; font-size: 14px;">
+        <tr>
+            <td style="padding: 8px 0; color: #64748b; width: 120px;">Dates:</td>
+            <td style="padding: 8px 0; color: #1e293b; font-weight: 600;">{{startDate}} - {{endDate}}</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0; color: #64748b;">Destinations:</td>
+            <td style="padding: 8px 0; color: #1e293b; font-weight: 600;">{{destinations}}</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0; color: #64748b;">Duration:</td>
+            <td style="padding: 8px 0; color: #1e293b; font-weight: 600;">{{duration}} days</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0; color: #64748b;">Total Budget:</td>
+            <td style="padding: 8px 0; color: #1e293b; font-weight: 600;">{{currency}} {{totalBudget}}</td>
+        </tr>
+    </table>
+</div>
+
+<p style="margin-bottom: 20px;">
+    {{#if approvalRequired}}
+    <strong>Action Required:</strong> This itinerary requires your approval before we proceed with bookings. Please review the details carefully.
+    {{else}}
+    Your itinerary includes accommodations, activities, transportation, and exclusive experiences tailored to your preferences.
+    {{/if}}
+</p>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="{{itineraryUrl}}" class="button">
+        View Full Itinerary
+    </a>
+</div>
+
+{{#if sustainabilityScore}}
+<div style="margin-top: 30px; padding: 20px; background-color: #ecfdf5; border-left: 4px solid #10b981; border-radius: 4px;">
+    <p style="margin: 0; font-size: 14px; color: #065f46;">
+        <strong>Sustainability Score:</strong> This itinerary has an environmental impact score of {{sustainabilityScore}}/100. Carbon offset options are available.
+    </p>
+</div>
+{{/if}}
+
+<p style="margin-top: 30px;">
+    Your designer, <strong>{{designerName}}</strong>, is available to make any adjustments or answer questions you may have.
+</p>
+
+<p style="margin-top: 20px;">
+    Warm regards,<br>
+    <strong>The LuxAI Designer Team</strong>
+</p>

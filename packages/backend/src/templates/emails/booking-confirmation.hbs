@@ -1,0 +1,82 @@
+<h1 style="font-size: 28px; font-weight: 700; color: #1e293b; margin-bottom: 20px;">
+    Booking Confirmed!
+</h1>
+
+<p style="margin-bottom: 20px;">
+    Dear {{clientName}},
+</p>
+
+<p style="margin-bottom: 20px;">
+    Great news! Your booking for <strong>{{bookingTitle}}</strong> has been confirmed. We're excited to be part of your journey.
+</p>
+
+<div style="background-color: #ecfdf5; padding: 24px; border-radius: 8px; margin: 30px 0; border-left: 4px solid #10b981;">
+    <h2 style="font-size: 20px; font-weight: 600; color: #065f46; margin-bottom: 16px;">
+        ✓ Confirmation Details
+    </h2>
+    <table style="width: 100%; font-size: 14px;">
+        <tr>
+            <td style="padding: 8px 0; color: #047857; width: 180px;">Confirmation Number:</td>
+            <td style="padding: 8px 0; color: #065f46; font-weight: 700; font-size: 16px;">{{confirmationNumber}}</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0; color: #047857;">Booking Type:</td>
+            <td style="padding: 8px 0; color: #065f46; font-weight: 600;">{{bookingType}}</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0; color: #047857;">Date & Time:</td>
+            <td style="padding: 8px 0; color: #065f46; font-weight: 600;">{{bookingDateTime}}</td>
+        </tr>
+        {{#if location}}
+        <tr>
+            <td style="padding: 8px 0; color: #047857;">Location:</td>
+            <td style="padding: 8px 0; color: #065f46; font-weight: 600;">{{location}}</td>
+        </tr>
+        {{/if}}
+        <tr>
+            <td style="padding: 8px 0; color: #047857;">Total Amount:</td>
+            <td style="padding: 8px 0; color: #065f46; font-weight: 700; font-size: 16px;">{{currency}} {{totalAmount}}</td>
+        </tr>
+    </table>
+</div>
+
+{{#if nextSteps}}
+<div style="margin: 30px 0;">
+    <h3 style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 12px;">Next Steps:</h3>
+    <ul style="padding-left: 20px; color: #475569;">
+        {{#each nextSteps}}
+        <li style="margin-bottom: 8px;">{{this}}</li>
+        {{/each}}
+    </ul>
+</div>
+{{/if}}
+
+{{#if importantInfo}}
+<div style="margin: 30px 0; padding: 20px; background-color: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 4px;">
+    <h3 style="font-size: 16px; font-weight: 600; color: #92400e; margin-bottom: 10px;">Important Information</h3>
+    <p style="margin: 0; font-size: 14px; color: #78350f;">
+        {{importantInfo}}
+    </p>
+</div>
+{{/if}}
+
+<div style="text-align: center; margin: 40px 0;">
+    <a href="{{bookingDetailsUrl}}" class="button">
+        View Booking Details
+    </a>
+    {{#if addToCalendarUrl}}
+    <br><br>
+    <a href="{{addToCalendarUrl}}" style="color: #d4af37; text-decoration: none; font-size: 14px;">
+        📅 Add to Calendar
+    </a>
+    {{/if}}
+</div>
+
+<p style="margin-top: 30px; font-size: 14px; color: #64748b;">
+    Need to make changes? Contact your designer at <a href="mailto:{{designerEmail}}" style="color: #d4af37;">{{designerEmail}}</a>
+</p>
+
+<p style="margin-top: 20px;">
+    Looking forward to serving you,<br>
+    <strong>The LuxAI Designer Team</strong>
+</p>

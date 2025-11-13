@@ -536,6 +536,34 @@ CREATE INDEX idx_empty_legs_date ON empty_legs(departure_date);
 CREATE INDEX idx_empty_legs_available ON empty_legs(available_until);
 
 -- ==========================================
+-- EMAIL SYSTEM
+-- ==========================================
+
+CREATE TABLE email_logs (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  to_email VARCHAR(255) NOT NULL,
+  from_email VARCHAR(255) NOT NULL,
+  subject VARCHAR(500) NOT NULL,
+  template_name VARCHAR(100),
+  template_data JSONB,
+  status VARCHAR(50) NOT NULL DEFAULT 'pending', -- pending, sent, failed, bounced
+  error_message TEXT,
+  sent_at TIMESTAMP WITH TIME ZONE,
+  opened_at TIMESTAMP WITH TIME ZONE,
+  clicked_at TIMESTAMP WITH TIME ZONE,
+  retry_count INTEGER DEFAULT 0,
+  message_id VARCHAR(255),
+  user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_email_logs_user ON email_logs(user_id);
+CREATE INDEX idx_email_logs_status ON email_logs(status);
+CREATE INDEX idx_email_logs_template ON email_logs(template_name);
+CREATE INDEX idx_email_logs_created ON email_logs(created_at);
+
+-- ==========================================
 -- FUNCTIONS & TRIGGERS
 -- ==========================================
 
@@ -566,3 +594,4 @@ CREATE TRIGGER update_documents_updated_at BEFORE UPDATE ON documents FOR EACH R
 CREATE TRIGGER update_forum_posts_updated_at BEFORE UPDATE ON forum_posts FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_aircraft_updated_at BEFORE UPDATE ON aircraft FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_empty_legs_updated_at BEFORE UPDATE ON empty_legs FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_email_logs_updated_at BEFORE UPDATE ON email_logs FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
