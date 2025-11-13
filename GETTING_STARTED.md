@@ -137,7 +137,7 @@ npm run db:verify --workspace=@luxai/backend
 # Health check
 npm run db:health --workspace=@luxai/backend
 
-# Seed data (coming soon)
+# Seed demo data
 npm run db:seed --workspace=@luxai/backend
 ```
 
@@ -189,7 +189,39 @@ npm run lint
 
 ## 🎯 Next Steps
 
-### 1. Create Your First User
+### 1. Seed Demo Data (Optional but Recommended)
+
+Populate your database with sample data to test all features:
+
+```bash
+npm run db:seed --workspace=@luxai/backend
+```
+
+This creates:
+- **4 demo user accounts** (see login credentials below)
+- **1 sample itinerary**: Mediterranean Grand Tour (14 days)
+- **4 destinations**: Nice, Portofino, Santorini, Mykonos
+- **3 exclusive Vault deals**: Private Island Villa, Château Wine Experience, Arctic Aurora Expedition
+- **2 forum posts** with real content
+- **2 empty leg flights** from Premier Aviation Services
+- **2 aircraft**: Gulfstream G650, Bombardier Global 7500
+
+**Demo Account Credentials:**
+
+All demo accounts use password: `Demo123!`
+
+| Email | Role | Name | Use For |
+|-------|------|------|---------|
+| `client@luxai.com` | Client | Alexander Sterling | Testing client features, bookings, itineraries |
+| `vendor@luxai.com` | Vendor | Sophia Laurent | Testing vendor portal, deal management |
+| `designer@luxai.com` | Designer | Isabella Chen | Testing itinerary creation, client management |
+| `admin@luxai.com` | Admin | Marcus Reynolds | Testing admin features, analytics, reports |
+
+### 2. Login and Explore
+
+After seeding, login at http://localhost:5173/login with any demo account above.
+
+**Or create your own user:**
 
 ```bash
 # Use the registration page at http://localhost:5173/register
@@ -198,15 +230,15 @@ npm run lint
 curl -X POST http://localhost:3000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "admin@luxai.com",
+    "email": "yourname@example.com",
     "password": "YourSecurePassword123!",
-    "firstName": "Admin",
-    "lastName": "User",
-    "role": "admin"
+    "firstName": "Your",
+    "lastName": "Name",
+    "role": "client"
   }'
 ```
 
-### 2. Configure API Keys
+### 3. Configure API Keys (Optional)
 
 Update your `.env` file with real API keys for:
 
@@ -231,7 +263,7 @@ SABRE_API_KEY=your-sabre-key
 SABRE_API_SECRET=your-sabre-secret
 ```
 
-### 3. Set Up Redis (Optional)
+### 4. Set Up Redis (Optional)
 
 Redis is used for caching. If you want to enable it:
 
@@ -246,14 +278,14 @@ docker run -d -p 6379:6379 redis:7-alpine
 # Or use a cloud provider (Upstash, Redis Cloud, etc.)
 ```
 
-### 4. Configure Environment Variables
+### 5. Configure Environment Variables
 
 Review and update all environment variables in `.env`:
 - JWT secret (change from default)
 - API URLs for production
 - Third-party API credentials
 
-### 5. Explore the Application
+### 6. Explore the Application
 
 - **Dashboard**: View overview and stats
 - **Itineraries**: Create AI-generated travel plans
