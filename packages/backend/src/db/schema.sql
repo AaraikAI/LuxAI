@@ -24,6 +24,7 @@ CREATE TABLE users (
   two_factor_enabled BOOLEAN DEFAULT false,
   two_factor_secret VARCHAR(255),
   backup_codes TEXT[],
+  ip_whitelist VARCHAR(45)[],
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
