@@ -203,6 +203,17 @@ class ApiClient {
       this.client.post('/two-factor/regenerate-backup-codes', data),
   };
 
+  // Security endpoints
+  security = {
+    addIPToWhitelist: (ipAddress: string) => this.client.post('/security/ip-whitelist', { ipAddress }),
+    getWhitelistedIPs: () => this.client.get('/security/ip-whitelist'),
+    removeIPFromWhitelist: (ipAddress: string) => this.client.delete(`/security/ip-whitelist/${ipAddress}`),
+    checkPasswordBreach: (password: string) => this.client.post('/security/check-password-breach', { password }),
+    checkPasswordStrength: (password: string) => this.client.post('/security/check-password-strength', { password }),
+    getSuspiciousActivity: () => this.client.get('/security/suspicious-activity'),
+    getAlerts: (limit?: number) => this.client.get('/security/alerts', { params: { limit } }),
+  };
+
   // Health check
   health = () => this.client.get('/health');
 }
