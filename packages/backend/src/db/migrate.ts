@@ -20,6 +20,7 @@ async function migrate() {
     process.exit(0);
   } catch (error) {
     logger.error('Database migration failed', error);
+    console.error('Detailed error:', error);
     process.exit(1);
   }
 }
