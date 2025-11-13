@@ -13,7 +13,8 @@
     "typecheck": "tsc --noEmit",
     "db:migrate": "tsx src/db/migrate.ts",
     "db:seed": "tsx src/db/seed.ts",
-    "db:verify": "tsx src/db/verify-tables.ts"
+    "db:verify": "tsx src/db/verify-tables.ts",
+    "db:health": "tsx src/db/health-check.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.27.0",
