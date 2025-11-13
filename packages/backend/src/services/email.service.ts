@@ -46,7 +46,7 @@ export class EmailService {
 
   constructor() {
     // Initialize nodemailer transporter
-    this.transporter = nodemailer.createTransporter({
+    this.transporter = nodemailer.createTransport({
       host: config.email.smtpHost || process.env.SMTP_HOST || 'smtp.gmail.com',
       port: parseInt(config.email.smtpPort || process.env.SMTP_PORT || '587'),
       secure: config.email.smtpSecure !== undefined ? config.email.smtpSecure : false,

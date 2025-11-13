@@ -42,8 +42,8 @@ export class StripeService {
       // Create account link for onboarding
       const accountLink = await this.stripe.accountLinks.create({
         account: account.id,
-        refresh_url: `${config.webUrl}/vendor/dashboard`,
-        return_url: `${config.webUrl}/vendor/dashboard?setup=complete`,
+        refresh_url: `${config.web.url}/vendor/dashboard`,
+        return_url: `${config.web.url}/vendor/dashboard?setup=complete`,
         type: 'account_onboarding',
       });
 

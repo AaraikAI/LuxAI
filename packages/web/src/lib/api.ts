@@ -176,6 +176,18 @@ class ApiClient {
     getAnalyticsReport: (params: any) => this.client.get('/reports/analytics', { params }),
   };
 
+  // GDPR endpoints
+  gdpr = {
+    requestDataExport: () => this.client.post('/gdpr/data-export'),
+    getExportStatus: (requestId: string) => this.client.get(`/gdpr/data-export/${requestId}`),
+    requestDataDeletion: (data: any) => this.client.post('/gdpr/data-deletion', data),
+    updateConsent: (preferences: any) => this.client.post('/gdpr/consent', preferences),
+    getConsent: () => this.client.get('/gdpr/consent'),
+    getPrivacyPolicy: () => this.client.get('/gdpr/privacy-policy'),
+    acceptPrivacyPolicy: (policyId: string) => this.client.post('/gdpr/privacy-policy/accept', { policyId }),
+    getPrivacyPolicyStatus: () => this.client.get('/gdpr/privacy-policy/status'),
+  };
+
   // Health check
   health = () => this.client.get('/health');
 }

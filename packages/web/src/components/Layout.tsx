@@ -2,6 +2,7 @@ import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { Sparkles, LogOut, Menu, X, ChevronDown, User } from 'lucide-react';
 import { useState } from 'react';
+import CookieConsent from './CookieConsent';
 
 export default function Layout() {
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -300,6 +301,9 @@ export default function Layout() {
           </div>
         </div>
       </footer>
+
+      {/* Cookie Consent Banner */}
+      <CookieConsent />
     </div>
   );
 }

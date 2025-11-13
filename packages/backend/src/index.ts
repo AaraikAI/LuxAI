@@ -14,7 +14,7 @@ const app = express();
 // Security middleware
 app.use(helmet());
 app.use(cors({
-  origin: config.webUrl,
+  origin: config.web.url,
   credentials: true,
 }));
 
