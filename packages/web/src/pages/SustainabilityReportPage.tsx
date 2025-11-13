@@ -67,7 +67,6 @@ export const SustainabilityReportPage: React.FC = () => {
 
     setPurchasing(true);
     try {
-      const offset = report.offsetOptions[selectedOffset];
       await api.sustainability.purchaseOffset({
         itineraryId: report.itineraryId,
         offsetAmount: report.totalEmissions,

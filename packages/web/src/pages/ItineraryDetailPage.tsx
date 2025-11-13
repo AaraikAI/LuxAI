@@ -76,7 +76,7 @@ export default function ItineraryDetailPage() {
               {itinerary.title}
             </h1>
             {itinerary.ai_generated && (
-              <Sparkles className="h-6 w-6 text-gold-500" title="AI Generated" />
+              <Sparkles className="h-6 w-6 text-gold-500" />
             )}
           </div>
           <span

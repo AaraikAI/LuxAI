@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
-import { Plane, Sparkles, Calendar, Users, DollarSign, Leaf, Shield } from 'lucide-react';
+import { Plane, Calendar, Users, Shield } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function PrivateAviationPage() {

@@ -2,14 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '@/lib/api';
 
-interface PaymentDetails {
-  quoteId: string;
-  amount: number;
-  currency: string;
-  description: string;
-  requiresEscrow: boolean;
-}
-
 export const PaymentPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();

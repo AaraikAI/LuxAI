@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '@/lib/api';
-import { Sparkles, Calendar, MapPin, DollarSign } from 'lucide-react';
+import { Sparkles, Calendar, DollarSign } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function ItinerariesPage() {
