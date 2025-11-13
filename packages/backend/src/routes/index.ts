@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import authRoutes from './auth.routes';
+import twoFactorRoutes from './twoFactor.routes';
 import itineraryRoutes from './itinerary.routes';
 import kycRoutes from './kyc.routes';
 import aviationRoutes from './aviation.routes';
@@ -31,6 +32,7 @@ router.get('/health', (_req, res) => {
 
 // API routes
 router.use('/auth', authRoutes);
+router.use('/two-factor', twoFactorRoutes);
 router.use('/itineraries', itineraryRoutes);
 router.use('/kyc', kycRoutes);
 router.use('/aviation', aviationRoutes);

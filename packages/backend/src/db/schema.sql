@@ -21,6 +21,9 @@ CREATE TABLE users (
   phone VARCHAR(50),
   kyc_status VARCHAR(50) NOT NULL DEFAULT 'pending' CHECK (kyc_status IN ('pending', 'in_progress', 'verified', 'rejected', 'expired')),
   kyc_verified_at TIMESTAMP WITH TIME ZONE,
+  two_factor_enabled BOOLEAN DEFAULT false,
+  two_factor_secret VARCHAR(255),
+  backup_codes TEXT[],
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -534,6 +537,40 @@ CREATE INDEX idx_empty_legs_origin ON empty_legs(origin_code);
 CREATE INDEX idx_empty_legs_destination ON empty_legs(destination_code);
 CREATE INDEX idx_empty_legs_date ON empty_legs(departure_date);
 CREATE INDEX idx_empty_legs_available ON empty_legs(available_until);
+
+-- ==========================================
+-- USER SESSIONS & SECURITY
+-- ==========================================
+
+CREATE TABLE user_sessions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  token_hash VARCHAR(255) NOT NULL,
+  device_info JSONB,
+  ip_address VARCHAR(45),
+  user_agent TEXT,
+  is_trusted BOOLEAN DEFAULT false,
+  last_activity TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_user_sessions_user ON user_sessions(user_id);
+CREATE INDEX idx_user_sessions_token ON user_sessions(token_hash);
+CREATE INDEX idx_user_sessions_expires ON user_sessions(expires_at);
+
+CREATE TABLE trusted_devices (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  device_fingerprint VARCHAR(255) NOT NULL,
+  device_name VARCHAR(255),
+  device_info JSONB,
+  last_used TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_trusted_devices_user ON trusted_devices(user_id);
+CREATE INDEX idx_trusted_devices_fingerprint ON trusted_devices(device_fingerprint);
 
 -- ==========================================
 -- EMAIL SYSTEM
