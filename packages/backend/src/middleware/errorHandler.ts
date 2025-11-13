@@ -17,7 +17,7 @@ export const errorHandler = (
   err: Error | AppError,
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   logger.error('Error occurred', {
     error: err,
@@ -26,7 +26,7 @@ export const errorHandler = (
   });
 
   if (err instanceof AppError) {
-    return res.status(err.statusCode).json({
+    res.status(err.statusCode).json({
       success: false,
       error: {
         code: err.code,
@@ -34,6 +34,7 @@ export const errorHandler = (
         details: err.details,
       },
     });
+    return;
   }
 
   // Default to 500 server error

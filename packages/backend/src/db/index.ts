@@ -1,4 +1,4 @@
-import { Pool, PoolClient, QueryResult } from 'pg';
+import { Pool, PoolClient, QueryResult, QueryResultRow } from 'pg';
 import { config } from '../config';
 import { logger } from '../utils/logger';
 
@@ -29,7 +29,7 @@ export const getPool = (): Pool => {
   return pool;
 };
 
-export const query = async <T = any>(
+export const query = async <T extends QueryResultRow = any>(
   text: string,
   params?: any[]
 ): Promise<QueryResult<T>> => {

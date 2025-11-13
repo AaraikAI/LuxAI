@@ -149,17 +149,17 @@ export class AuthService {
   }
 
   private generateToken(user: any): string {
-    return jwt.sign(
-      {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      },
-      config.jwt.secret,
-      {
-        expiresIn: config.jwt.expiresIn,
-      }
-    );
+    const payload = {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    };
+
+    const options: any = {
+      expiresIn: config.jwt.expiresIn,
+    };
+
+    return jwt.sign(payload, config.jwt.secret, options);
   }
 }
 
