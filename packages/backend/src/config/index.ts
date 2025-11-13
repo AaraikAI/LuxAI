@@ -59,6 +59,8 @@ export const config = {
   sabre: {
     apiKey: process.env.SABRE_API_KEY || '',
     apiSecret: process.env.SABRE_API_SECRET || '',
+    apiUrl: process.env.SABRE_API_URL || 'https://api.cert.platform.sabre.com',
+    pcc: process.env.SABRE_PCC || '',
   },
 
   // AWS

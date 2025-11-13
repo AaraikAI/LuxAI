@@ -60,6 +60,36 @@ export default function Layout() {
                     DocuSign
                   </Link>
                   <Link
+                    to="/vault"
+                    className="text-luxury-700 hover:text-luxury-900 transition-colors"
+                  >
+                    Vault
+                  </Link>
+                  <Link
+                    to="/flights"
+                    className="text-luxury-700 hover:text-luxury-900 transition-colors"
+                  >
+                    Flights
+                  </Link>
+                  <Link
+                    to="/forum"
+                    className="text-luxury-700 hover:text-luxury-900 transition-colors"
+                  >
+                    Forum
+                  </Link>
+                  <Link
+                    to="/analytics"
+                    className="text-luxury-700 hover:text-luxury-900 transition-colors"
+                  >
+                    Analytics
+                  </Link>
+                  <Link
+                    to="/reports"
+                    className="text-luxury-700 hover:text-luxury-900 transition-colors"
+                  >
+                    Reports
+                  </Link>
+                  <Link
                     to="/itineraries/new"
                     className="flex items-center space-x-1 btn-primary"
                   >
@@ -140,6 +170,36 @@ export default function Layout() {
                     className="text-luxury-700 hover:text-luxury-900 transition-colors px-2"
                   >
                     DocuSign
+                  </Link>
+                  <Link
+                    to="/vault"
+                    className="text-luxury-700 hover:text-luxury-900 transition-colors px-2"
+                  >
+                    Vault
+                  </Link>
+                  <Link
+                    to="/flights"
+                    className="text-luxury-700 hover:text-luxury-900 transition-colors px-2"
+                  >
+                    Flights
+                  </Link>
+                  <Link
+                    to="/forum"
+                    className="text-luxury-700 hover:text-luxury-900 transition-colors px-2"
+                  >
+                    Forum
+                  </Link>
+                  <Link
+                    to="/analytics"
+                    className="text-luxury-700 hover:text-luxury-900 transition-colors px-2"
+                  >
+                    Analytics
+                  </Link>
+                  <Link
+                    to="/reports"
+                    className="text-luxury-700 hover:text-luxury-900 transition-colors px-2"
+                  >
+                    Reports
                   </Link>
                   <Link to="/itineraries/new" className="btn-primary w-full">
                     Generate Trip

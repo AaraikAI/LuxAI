@@ -17,6 +17,13 @@ import { SustainabilityReportPage } from '@/pages/SustainabilityReportPage';
 import { PaymentPage } from '@/pages/PaymentPage';
 import { LiveUpdatesManagementPage } from '@/pages/LiveUpdatesManagementPage';
 import { DocuSignPage } from '@/pages/DocuSignPage';
+import { VaultMarketplacePage } from '@/pages/VaultMarketplacePage';
+import { VaultDealDetailPage } from '@/pages/VaultDealDetailPage';
+import { FlightSearchPage } from '@/pages/FlightSearchPage';
+import { ForumPage } from '@/pages/ForumPage';
+import { ForumPostPage } from '@/pages/ForumPostPage';
+import { AnalyticsDashboardPage } from '@/pages/AnalyticsDashboardPage';
+import { ReportsPage } from '@/pages/ReportsPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -131,6 +138,62 @@ function App() {
           element={
             <ProtectedRoute>
               <DocuSignPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="vault"
+          element={
+            <ProtectedRoute>
+              <VaultMarketplacePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="vault/deals/:id"
+          element={
+            <ProtectedRoute>
+              <VaultDealDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="flights"
+          element={
+            <ProtectedRoute>
+              <FlightSearchPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="forum"
+          element={
+            <ProtectedRoute>
+              <ForumPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="forum/posts/:id"
+          element={
+            <ProtectedRoute>
+              <ForumPostPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="analytics"
+          element={
+            <ProtectedRoute>
+              <AnalyticsDashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="reports"
+          element={
+            <ProtectedRoute>
+              <ReportsPage />
             </ProtectedRoute>
           }
         />

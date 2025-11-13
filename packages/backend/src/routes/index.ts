@@ -9,6 +9,11 @@ import paymentRoutes from './payment.routes';
 import sustainabilityRoutes from './sustainability.routes';
 import liveUpdatesRoutes from './liveUpdates.routes';
 import docusignRoutes from './docusign.routes';
+import vaultRoutes from './vault.routes';
+import gdsRoutes from './gds.routes';
+import forumRoutes from './forum.routes';
+import analyticsRoutes from './analytics.routes';
+import reportsRoutes from './reports.routes';
 
 const router = Router();
 
@@ -35,5 +40,10 @@ router.use('/payments', paymentRoutes);
 router.use('/sustainability', sustainabilityRoutes);
 router.use('/live-updates', liveUpdatesRoutes);
 router.use('/docusign', docusignRoutes);
+router.use('/vault', vaultRoutes);
+router.use('/gds', gdsRoutes);
+router.use('/forum', forumRoutes);
+router.use('/analytics', analyticsRoutes);
+router.use('/reports', reportsRoutes);
 
 export default router;

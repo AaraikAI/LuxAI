@@ -129,6 +129,53 @@ class ApiClient {
     voidEnvelope: (id: string, reason: string) => this.client.post(`/docusign/envelope/${id}/void`, { reason }),
   };
 
+  // Vault (Off-Market Marketplace) endpoints
+  vault = {
+    search: (filters: any) => this.client.post('/vault/search', filters),
+    getFeatured: () => this.client.get('/vault/featured'),
+    getDeal: (id: string) => this.client.get(`/vault/deals/${id}`),
+    requestQuote: (id: string, data: any) => this.client.post(`/vault/deals/${id}/quote`, data),
+  };
+
+  // GDS (Commercial Travel) endpoints
+  gds = {
+    searchFlights: (data: any) => this.client.post('/gds/flights/search', data),
+    searchHotels: (data: any) => this.client.post('/gds/hotels/search', data),
+    bookFlight: (id: string, data: any) => this.client.post(`/gds/flights/${id}/book`, data),
+    bookHotel: (id: string, data: any) => this.client.post(`/gds/hotels/${id}/book`, data),
+  };
+
+  // Forum endpoints
+  forum = {
+    createPost: (data: any) => this.client.post('/forum/posts', data),
+    getPosts: (params?: any) => this.client.get('/forum/posts', { params }),
+    getTrendingPosts: () => this.client.get('/forum/posts/trending'),
+    getPost: (id: string) => this.client.get(`/forum/posts/${id}`),
+    createReply: (postId: string, data: any) => this.client.post(`/forum/posts/${postId}/replies`, data),
+    getReplies: (postId: string) => this.client.get(`/forum/posts/${postId}/replies`),
+    upvotePost: (postId: string) => this.client.post(`/forum/posts/${postId}/upvote`),
+    upvoteReply: (replyId: string) => this.client.post(`/forum/replies/${replyId}/upvote`),
+  };
+
+  // Analytics endpoints
+  analytics = {
+    getUserAnalytics: (userId: string) => this.client.get(`/analytics/user/${userId}`),
+    getVendorAnalytics: (vendorId: string) => this.client.get(`/analytics/vendor/${vendorId}`),
+    getPlatformAnalytics: () => this.client.get('/analytics/platform'),
+    getTimeSeriesData: (params: any) => this.client.get('/analytics/timeseries', { params }),
+  };
+
+  // Reports endpoints
+  reports = {
+    getItineraryReport: (id: string) => this.client.get(`/reports/itinerary/${id}`),
+    exportPDF: (id: string) => this.client.get(`/reports/itinerary/${id}/pdf`, { responseType: 'blob' }),
+    exportCSV: (id: string) => this.client.get(`/reports/itinerary/${id}/csv`, { responseType: 'blob' }),
+    exportJSON: (id: string) => this.client.get(`/reports/itinerary/${id}/json`),
+    generateShareLink: (id: string, data: any) => this.client.post(`/reports/itinerary/${id}/share`, data),
+    getSharedItinerary: (token: string) => this.client.get(`/reports/share/${token}`),
+    getAnalyticsReport: (params: any) => this.client.get('/reports/analytics', { params }),
+  };
+
   // Health check
   health = () => this.client.get('/health');
 }
