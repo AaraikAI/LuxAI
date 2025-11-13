@@ -17,6 +17,7 @@ import analyticsRoutes from './analytics.routes';
 import reportsRoutes from './reports.routes';
 import gdprRoutes from './gdpr.routes';
 import sessionRoutes from './session.routes';
+import securityRoutes from './security.routes';
 
 const router = Router();
 
@@ -51,5 +52,6 @@ router.use('/analytics', analyticsRoutes);
 router.use('/reports', reportsRoutes);
 router.use('/gdpr', gdprRoutes);
 router.use('/sessions', sessionRoutes);
+router.use('/security', securityRoutes);
 
 export default router;
