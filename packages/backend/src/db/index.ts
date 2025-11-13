@@ -11,6 +11,11 @@ export const getPool = (): Pool => {
       max: config.database.maxConnections,
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 2000,
+      ssl: config.database.url.includes('supabase.co')
+        ? {
+            rejectUnauthorized: false, // Supabase uses self-signed certs in some regions
+          }
+        : false,
     });
 
     pool.on('error', (err) => {
