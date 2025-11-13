@@ -42,6 +42,8 @@ class ApiClient {
   auth = {
     register: (data: any) => this.client.post('/auth/register', data),
     login: (data: any) => this.client.post('/auth/login', data),
+    verify2FA: (data: { tempToken: string; code: string; isBackupCode?: boolean }) =>
+      this.client.post('/auth/verify-2fa', data),
     verify: (token: string) => this.client.post('/auth/verify', { token }),
   };
 
@@ -186,6 +188,19 @@ class ApiClient {
     getPrivacyPolicy: () => this.client.get('/gdpr/privacy-policy'),
     acceptPrivacyPolicy: (policyId: string) => this.client.post('/gdpr/privacy-policy/accept', { policyId }),
     getPrivacyPolicyStatus: () => this.client.get('/gdpr/privacy-policy/status'),
+  };
+
+  // Two-Factor Authentication endpoints
+  twoFactor = {
+    getStatus: () => this.client.get('/two-factor/status'),
+    setup: () => this.client.post('/two-factor/setup'),
+    enable: (data: { secret: string; verificationCode: string; backupCodes: string[] }) =>
+      this.client.post('/two-factor/enable', data),
+    disable: (data: { verificationCode: string }) => this.client.post('/two-factor/disable', data),
+    verify: (data: { code: string }) => this.client.post('/two-factor/verify', data),
+    verifyBackup: (data: { code: string }) => this.client.post('/two-factor/verify-backup', data),
+    regenerateBackupCodes: (data: { verificationCode: string }) =>
+      this.client.post('/two-factor/regenerate-backup-codes', data),
   };
 
   // Health check

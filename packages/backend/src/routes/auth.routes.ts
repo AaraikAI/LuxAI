@@ -20,6 +20,12 @@ const loginSchema = z.object({
   password: z.string(),
 });
 
+const verify2FASchema = z.object({
+  tempToken: z.string(),
+  code: z.string().length(6).or(z.string().regex(/^[A-Z0-9]{4}-[A-Z0-9]{4}$/)),
+  isBackupCode: z.boolean().optional(),
+});
+
 router.post(
   '/register',
   asyncHandler(async (req, res) => {
@@ -38,6 +44,23 @@ router.post(
   asyncHandler(async (req, res) => {
     const data = loginSchema.parse(req.body);
     const result = await authService.login(data);
+
+    res.json({
+      success: true,
+      data: result,
+    });
+  })
+);
+
+router.post(
+  '/verify-2fa',
+  asyncHandler(async (req, res) => {
+    const data = verify2FASchema.parse(req.body);
+    const result = await authService.verify2FA(
+      data.tempToken,
+      data.code,
+      data.isBackupCode || false
+    );
 
     res.json({
       success: true,
