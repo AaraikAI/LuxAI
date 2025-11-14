@@ -486,6 +486,234 @@ export class GDPRService {
       throw error;
     }
   }
+
+  // ============================================
+  // ADMIN METHODS
+  // ============================================
+
+  /**
+   * Get all privacy policy versions (admin)
+   */
+  async getAllPrivacyPolicies(): Promise<any[]> {
+    try {
+      const result = await query(
+        `SELECT id, version, content, effective_date, created_at, created_by, is_active
+         FROM privacy_policies
+         ORDER BY created_at DESC`
+      );
+
+      return result.rows;
+    } catch (error) {
+      logger.error('Failed to get all privacy policies', { error });
+      throw error;
+    }
+  }
+
+  /**
+   * Create new privacy policy version (admin)
+   */
+  async createPrivacyPolicy(data: {
+    version: string;
+    content: string;
+    effective_date: Date;
+    created_by: string;
+  }): Promise<any> {
+    try {
+      const result = await query(
+        `INSERT INTO privacy_policies (version, content, effective_date, created_by, is_active)
+         VALUES ($1, $2, $3, $4, false)
+         RETURNING id, version, content, effective_date, created_at, created_by, is_active`,
+        [data.version, data.content, data.effective_date, data.created_by]
+      );
+
+      logger.info('Privacy policy created', {
+        policyId: result.rows[0].id,
+        version: data.version,
+        createdBy: data.created_by,
+      });
+
+      return result.rows[0];
+    } catch (error) {
+      logger.error('Failed to create privacy policy', { error, data });
+      throw error;
+    }
+  }
+
+  /**
+   * Activate a privacy policy version (admin)
+   */
+  async activatePrivacyPolicy(policyId: string): Promise<void> {
+    try {
+      // Deactivate all existing policies
+      await query('UPDATE privacy_policies SET is_active = false');
+
+      // Activate the specified policy
+      const result = await query(
+        `UPDATE privacy_policies
+         SET is_active = true
+         WHERE id = $1
+         RETURNING id, version`,
+        [policyId]
+      );
+
+      if (result.rows.length === 0) {
+        throw new AppError(404, 'POLICY_NOT_FOUND', 'Privacy policy not found');
+      }
+
+      logger.info('Privacy policy activated', {
+        policyId,
+        version: result.rows[0].version,
+      });
+    } catch (error) {
+      logger.error('Failed to activate privacy policy', { error, policyId });
+      throw error;
+    }
+  }
+
+  /**
+   * Get all data requests with filters (admin)
+   */
+  async getAllDataRequests(filters?: {
+    status?: string;
+    type?: string;
+  }): Promise<any[]> {
+    try {
+      let sql = `
+        SELECT dr.*, u.email as user_email, u.first_name || ' ' || u.last_name as user_name
+        FROM data_requests dr
+        LEFT JOIN users u ON dr.user_id = u.id
+        WHERE 1=1
+      `;
+      const params: any[] = [];
+      let paramIndex = 1;
+
+      if (filters?.status) {
+        sql += ` AND dr.status = $${paramIndex++}`;
+        params.push(filters.status);
+      }
+
+      if (filters?.type) {
+        sql += ` AND dr.request_type = $${paramIndex++}`;
+        params.push(filters.type);
+      }
+
+      sql += ' ORDER BY dr.created_at DESC';
+
+      const result = await query(sql, params);
+
+      return result.rows;
+    } catch (error) {
+      logger.error('Failed to get all data requests', { error, filters });
+      throw error;
+    }
+  }
+
+  /**
+   * Approve a data request (admin)
+   */
+  async approveDataRequest(
+    requestId: string,
+    adminId: string,
+    notes?: string
+  ): Promise<void> {
+    try {
+      const result = await query(
+        `UPDATE data_requests
+         SET status = 'processing',
+             metadata = jsonb_set(
+               COALESCE(metadata, '{}'::jsonb),
+               '{approved_by}',
+               $2::jsonb
+             ),
+             metadata = jsonb_set(
+               metadata,
+               '{approved_at}',
+               $3::jsonb
+             ),
+             metadata = jsonb_set(
+               metadata,
+               '{notes}',
+               $4::jsonb
+             )
+         WHERE id = $1 AND status = 'pending'
+         RETURNING id, request_type, user_id`,
+        [requestId, JSON.stringify(adminId), JSON.stringify(new Date().toISOString()), JSON.stringify(notes || '')]
+      );
+
+      if (result.rows.length === 0) {
+        throw new AppError(404, 'REQUEST_NOT_FOUND', 'Data request not found or already processed');
+      }
+
+      const request = result.rows[0];
+
+      logger.info('Data request approved', {
+        requestId,
+        type: request.request_type,
+        userId: request.user_id,
+        approvedBy: adminId,
+      });
+
+      // TODO: Trigger background job to process the request
+      // For export: generate data export file
+      // For deletion: anonymize user data
+    } catch (error) {
+      logger.error('Failed to approve data request', { error, requestId, adminId });
+      throw error;
+    }
+  }
+
+  /**
+   * Reject a data request (admin)
+   */
+  async rejectDataRequest(
+    requestId: string,
+    adminId: string,
+    notes: string
+  ): Promise<void> {
+    try {
+      const result = await query(
+        `UPDATE data_requests
+         SET status = 'rejected',
+             metadata = jsonb_set(
+               COALESCE(metadata, '{}'::jsonb),
+               '{rejected_by}',
+               $2::jsonb
+             ),
+             metadata = jsonb_set(
+               metadata,
+               '{rejected_at}',
+               $3::jsonb
+             ),
+             metadata = jsonb_set(
+               metadata,
+               '{rejection_reason}',
+               $4::jsonb
+             )
+         WHERE id = $1 AND status = 'pending'
+         RETURNING id, request_type, user_id`,
+        [requestId, JSON.stringify(adminId), JSON.stringify(new Date().toISOString()), JSON.stringify(notes)]
+      );
+
+      if (result.rows.length === 0) {
+        throw new AppError(404, 'REQUEST_NOT_FOUND', 'Data request not found or already processed');
+      }
+
+      const request = result.rows[0];
+
+      logger.info('Data request rejected', {
+        requestId,
+        type: request.request_type,
+        userId: request.user_id,
+        rejectedBy: adminId,
+        reason: notes,
+      });
+
+      // TODO: Send notification to user about rejection
+    } catch (error) {
+      logger.error('Failed to reject data request', { error, requestId, adminId });
+      throw error;
+    }
+  }
 }
 
 export const gdprService = new GDPRService();

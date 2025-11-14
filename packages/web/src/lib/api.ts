@@ -188,6 +188,18 @@ class ApiClient {
     getPrivacyPolicy: () => this.client.get('/gdpr/privacy-policy'),
     acceptPrivacyPolicy: (policyId: string) => this.client.post('/gdpr/privacy-policy/accept', { policyId }),
     getPrivacyPolicyStatus: () => this.client.get('/gdpr/privacy-policy/status'),
+
+    // Admin endpoints
+    getAllPrivacyPolicies: () => this.client.get('/gdpr/admin/privacy-policies'),
+    createPrivacyPolicy: (data: { version: string; content: string; effective_date: string }) =>
+      this.client.post('/gdpr/admin/privacy-policies', data),
+    activatePrivacyPolicy: (policyId: string) => this.client.post(`/gdpr/admin/privacy-policies/${policyId}/activate`),
+    getAllDataRequests: (filters?: { status?: string; type?: string }) =>
+      this.client.get('/gdpr/admin/data-requests', { params: filters }),
+    approveDataRequest: (requestId: string, data: { notes?: string }) =>
+      this.client.post(`/gdpr/admin/data-requests/${requestId}/approve`, data),
+    rejectDataRequest: (requestId: string, data: { notes: string }) =>
+      this.client.post(`/gdpr/admin/data-requests/${requestId}/reject`, data),
   };
 
   // Two-Factor Authentication endpoints

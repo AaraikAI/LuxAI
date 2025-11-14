@@ -213,4 +213,217 @@ router.get(
   })
 );
 
+// ============================================
+// ADMIN ENDPOINTS
+// ============================================
+
+/**
+ * GET /gdpr/admin/privacy-policies
+ * Get all privacy policy versions (admin only)
+ */
+router.get(
+  '/admin/privacy-policies',
+  authenticate,
+  asyncHandler(async (req: AuthRequest, res) => {
+    // TODO: Add admin role check
+    if (req.user!.role !== 'admin') {
+      res.status(403).json({
+        success: false,
+        error: {
+          code: 'FORBIDDEN',
+          message: 'Admin access required',
+        },
+      });
+      return;
+    }
+
+    const policies = await gdprService.getAllPrivacyPolicies();
+
+    res.json({
+      success: true,
+      data: policies,
+    });
+  })
+);
+
+/**
+ * POST /gdpr/admin/privacy-policies
+ * Create new privacy policy version (admin only)
+ */
+const createPolicySchema = z.object({
+  version: z.string().min(1),
+  content: z.string().min(1),
+  effective_date: z.string().datetime(),
+});
+
+router.post(
+  '/admin/privacy-policies',
+  authenticate,
+  asyncHandler(async (req: AuthRequest, res) => {
+    if (req.user!.role !== 'admin') {
+      res.status(403).json({
+        success: false,
+        error: {
+          code: 'FORBIDDEN',
+          message: 'Admin access required',
+        },
+      });
+      return;
+    }
+
+    const data = createPolicySchema.parse(req.body);
+
+    const policy = await gdprService.createPrivacyPolicy({
+      version: data.version,
+      content: data.content,
+      effective_date: new Date(data.effective_date),
+      created_by: req.user!.id,
+    });
+
+    res.json({
+      success: true,
+      data: policy,
+    });
+  })
+);
+
+/**
+ * POST /gdpr/admin/privacy-policies/:policyId/activate
+ * Activate a privacy policy version (admin only)
+ */
+router.post(
+  '/admin/privacy-policies/:policyId/activate',
+  authenticate,
+  asyncHandler(async (req: AuthRequest, res) => {
+    if (req.user!.role !== 'admin') {
+      res.status(403).json({
+        success: false,
+        error: {
+          code: 'FORBIDDEN',
+          message: 'Admin access required',
+        },
+      });
+      return;
+    }
+
+    const { policyId } = req.params;
+
+    await gdprService.activatePrivacyPolicy(policyId);
+
+    res.json({
+      success: true,
+      data: {
+        message: 'Privacy policy activated successfully',
+      },
+    });
+  })
+);
+
+/**
+ * GET /gdpr/admin/data-requests
+ * Get all data requests (admin only)
+ */
+router.get(
+  '/admin/data-requests',
+  authenticate,
+  asyncHandler(async (req: AuthRequest, res) => {
+    if (req.user!.role !== 'admin') {
+      res.status(403).json({
+        success: false,
+        error: {
+          code: 'FORBIDDEN',
+          message: 'Admin access required',
+        },
+      });
+      return;
+    }
+
+    const { status, type } = req.query;
+
+    const requests = await gdprService.getAllDataRequests({
+      status: status as string,
+      type: type as string,
+    });
+
+    res.json({
+      success: true,
+      data: requests,
+    });
+  })
+);
+
+/**
+ * POST /gdpr/admin/data-requests/:requestId/approve
+ * Approve a data request (admin only)
+ */
+const approveRequestSchema = z.object({
+  notes: z.string().optional(),
+});
+
+router.post(
+  '/admin/data-requests/:requestId/approve',
+  authenticate,
+  asyncHandler(async (req: AuthRequest, res) => {
+    if (req.user!.role !== 'admin') {
+      res.status(403).json({
+        success: false,
+        error: {
+          code: 'FORBIDDEN',
+          message: 'Admin access required',
+        },
+      });
+      return;
+    }
+
+    const { requestId } = req.params;
+    const { notes } = approveRequestSchema.parse(req.body);
+
+    await gdprService.approveDataRequest(requestId, req.user!.id, notes);
+
+    res.json({
+      success: true,
+      data: {
+        message: 'Data request approved and processing has begun',
+      },
+    });
+  })
+);
+
+/**
+ * POST /gdpr/admin/data-requests/:requestId/reject
+ * Reject a data request (admin only)
+ */
+const rejectRequestSchema = z.object({
+  notes: z.string().min(1),
+});
+
+router.post(
+  '/admin/data-requests/:requestId/reject',
+  authenticate,
+  asyncHandler(async (req: AuthRequest, res) => {
+    if (req.user!.role !== 'admin') {
+      res.status(403).json({
+        success: false,
+        error: {
+          code: 'FORBIDDEN',
+          message: 'Admin access required',
+        },
+      });
+      return;
+    }
+
+    const { requestId } = req.params;
+    const { notes } = rejectRequestSchema.parse(req.body);
+
+    await gdprService.rejectDataRequest(requestId, req.user!.id, notes);
+
+    res.json({
+      success: true,
+      data: {
+        message: 'Data request rejected',
+      },
+    });
+  })
+);
+
 export default router;
