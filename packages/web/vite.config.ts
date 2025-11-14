@@ -8,7 +8,11 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@luxai/shared': path.resolve(__dirname, '../shared/src'),
     },
+  },
+  optimizeDeps: {
+    include: ['@luxai/shared'],
   },
   server: {
     port: 5173,

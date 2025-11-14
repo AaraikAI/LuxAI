@@ -191,11 +191,33 @@ export class AnalyticsService {
         [vendorId]
       );
 
+      // Calculate repeat customer rate
+      const repeatCustomerResult = await pool.query(
+        `
+        WITH customer_purchase_counts AS (
+          SELECT
+            q.requester_id,
+            COUNT(*) as purchase_count
+          FROM quotes q
+          JOIN deals d ON q.deal_id = d.id
+          WHERE d.vendor_id = $1 AND q.status = 'accepted'
+          GROUP BY q.requester_id
+        )
+        SELECT
+          COUNT(*) FILTER (WHERE purchase_count > 1) as repeat_customers,
+          COUNT(*) as total_customers
+        FROM customer_purchase_counts
+        `,
+        [vendorId]
+      );
+
       const totalDeals = parseInt(dealsResult.rows[0].total);
       const totalViews = parseInt(dealsResult.rows[0].views);
       const totalInquiries = parseInt(inquiriesResult.rows[0].count);
       const acceptedQuotes = parseInt(acceptedResult.rows[0].count);
       const totalRevenue = parseFloat(acceptedResult.rows[0].revenue);
+      const repeatCustomers = parseInt(repeatCustomerResult.rows[0].repeat_customers || '0');
+      const totalCustomers = parseInt(repeatCustomerResult.rows[0].total_customers || '0');
 
       return {
         vendorId,
@@ -213,7 +235,7 @@ export class AnalyticsService {
           inquiries: parseInt(r.inquiries),
         })),
         customerSatisfaction: parseFloat(satisfactionResult.rows[0].rating),
-        repeatCustomerRate: 0, // TODO: Calculate repeat customer rate
+        repeatCustomerRate: totalCustomers > 0 ? (repeatCustomers / totalCustomers) * 100 : 0,
       };
     } catch (error) {
       logger.error('Failed to get vendor analytics', error);
@@ -306,10 +328,39 @@ export class AnalyticsService {
         `
       );
 
+      // Calculate average itinerary value (sum of all line items per itinerary)
+      const avgItineraryValueResult = await pool.query(
+        `
+        SELECT COALESCE(AVG(total_value), 0) as avg_value
+        FROM (
+          SELECT
+            i.id as itinerary_id,
+            COALESCE(SUM(li.price * li.quantity), 0) as total_value
+          FROM itineraries i
+          LEFT JOIN line_items li ON i.id = li.itinerary_id
+          GROUP BY i.id
+        ) itinerary_values
+        WHERE total_value > 0
+        `
+      );
+
+      // Calculate conversion rate (itineraries with approved status / total itineraries)
+      const conversionRateResult = await pool.query(
+        `
+        SELECT
+          COUNT(*) FILTER (WHERE status = 'approved') as approved_itineraries,
+          COUNT(*) as total_itineraries
+        FROM itineraries
+        WHERE created_at >= NOW() - INTERVAL '90 days'
+        `
+      );
+
       const currentRevenue = parseFloat(revenueGrowthResult.rows[0].current);
       const previousRevenue = parseFloat(revenueGrowthResult.rows[0].previous);
       const currentUsers = parseInt(userGrowthResult.rows[0].current);
       const previousUsers = parseInt(userGrowthResult.rows[0].previous);
+      const approvedItineraries = parseInt(conversionRateResult.rows[0].approved_itineraries || '0');
+      const totalItinerariesForConversion = parseInt(conversionRateResult.rows[0].total_itineraries || '0');
 
       return {
         totalUsers: parseInt(usersResult.rows[0].total),
@@ -331,8 +382,8 @@ export class AnalyticsService {
           acc[r.category] = parseInt(r.count);
           return acc;
         }, {} as Record<string, number>),
-        averageItineraryValue: 0, // TODO: Calculate
-        conversionRate: 0, // TODO: Calculate
+        averageItineraryValue: parseFloat(avgItineraryValueResult.rows[0].avg_value),
+        conversionRate: totalItinerariesForConversion > 0 ? (approvedItineraries / totalItinerariesForConversion) * 100 : 0,
       };
     } catch (error) {
       logger.error('Failed to get platform analytics', error);

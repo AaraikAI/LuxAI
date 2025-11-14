@@ -205,7 +205,7 @@ export class DocuSignService {
       const response = await this.client.post(
         `/v2.1/accounts/${this.accountId}/envelopes/${envelopeId}/views/recipient`,
         {
-          returnUrl: `${config.webUrl}/documents/signed`,
+          returnUrl: `${config.web.url}/documents/signed`,
           authenticationMethod: 'email',
           email: signer.email,
           userName: signer.name,

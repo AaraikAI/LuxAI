@@ -42,6 +42,8 @@ class ApiClient {
   auth = {
     register: (data: any) => this.client.post('/auth/register', data),
     login: (data: any) => this.client.post('/auth/login', data),
+    verify2FA: (data: { tempToken: string; code: string; isBackupCode?: boolean }) =>
+      this.client.post('/auth/verify-2fa', data),
     verify: (token: string) => this.client.post('/auth/verify', { token }),
   };
 
@@ -174,6 +176,159 @@ class ApiClient {
     generateShareLink: (id: string, data: any) => this.client.post(`/reports/itinerary/${id}/share`, data),
     getSharedItinerary: (token: string) => this.client.get(`/reports/share/${token}`),
     getAnalyticsReport: (params: any) => this.client.get('/reports/analytics', { params }),
+  };
+
+  // GDPR endpoints
+  gdpr = {
+    requestDataExport: () => this.client.post('/gdpr/data-export'),
+    getExportStatus: (requestId: string) => this.client.get(`/gdpr/data-export/${requestId}`),
+    requestDataDeletion: (data: any) => this.client.post('/gdpr/data-deletion', data),
+    updateConsent: (preferences: any) => this.client.post('/gdpr/consent', preferences),
+    getConsent: () => this.client.get('/gdpr/consent'),
+    getPrivacyPolicy: () => this.client.get('/gdpr/privacy-policy'),
+    acceptPrivacyPolicy: (policyId: string) => this.client.post('/gdpr/privacy-policy/accept', { policyId }),
+    getPrivacyPolicyStatus: () => this.client.get('/gdpr/privacy-policy/status'),
+
+    // Admin endpoints
+    getAllPrivacyPolicies: () => this.client.get('/gdpr/admin/privacy-policies'),
+    createPrivacyPolicy: (data: { version: string; content: string; effective_date: string }) =>
+      this.client.post('/gdpr/admin/privacy-policies', data),
+    activatePrivacyPolicy: (policyId: string) => this.client.post(`/gdpr/admin/privacy-policies/${policyId}/activate`),
+    getAllDataRequests: (filters?: { status?: string; type?: string }) =>
+      this.client.get('/gdpr/admin/data-requests', { params: filters }),
+    approveDataRequest: (requestId: string, data: { notes?: string }) =>
+      this.client.post(`/gdpr/admin/data-requests/${requestId}/approve`, data),
+    rejectDataRequest: (requestId: string, data: { notes: string }) =>
+      this.client.post(`/gdpr/admin/data-requests/${requestId}/reject`, data),
+  };
+
+  // Two-Factor Authentication endpoints
+  twoFactor = {
+    getStatus: () => this.client.get('/two-factor/status'),
+    setup: () => this.client.post('/two-factor/setup'),
+    enable: (data: { secret: string; verificationCode: string; backupCodes: string[] }) =>
+      this.client.post('/two-factor/enable', data),
+    disable: (data: { verificationCode: string }) => this.client.post('/two-factor/disable', data),
+    verify: (data: { code: string }) => this.client.post('/two-factor/verify', data),
+    verifyBackup: (data: { code: string }) => this.client.post('/two-factor/verify-backup', data),
+    regenerateBackupCodes: (data: { verificationCode: string }) =>
+      this.client.post('/two-factor/regenerate-backup-codes', data),
+  };
+
+  // Security endpoints
+  security = {
+    addIPToWhitelist: (ipAddress: string) => this.client.post('/security/ip-whitelist', { ipAddress }),
+    getWhitelistedIPs: () => this.client.get('/security/ip-whitelist'),
+    removeIPFromWhitelist: (ipAddress: string) => this.client.delete(`/security/ip-whitelist/${ipAddress}`),
+    checkPasswordBreach: (password: string) => this.client.post('/security/check-password-breach', { password }),
+    checkPasswordStrength: (password: string) => this.client.post('/security/check-password-strength', { password }),
+    getSuspiciousActivity: () => this.client.get('/security/suspicious-activity'),
+    getAlerts: (limit?: number) => this.client.get('/security/alerts', { params: { limit } }),
+  };
+
+  // Notification endpoints
+  notifications = {
+    list: (params?: { limit?: number; offset?: number; unreadOnly?: boolean; type?: string }) =>
+      this.client.get('/notifications', { params }),
+    getUnreadCount: () => this.client.get('/notifications/unread-count'),
+    markAsRead: (id: string) => this.client.put(`/notifications/${id}/read`),
+    markAllAsRead: () => this.client.put('/notifications/read-all'),
+    archive: (id: string) => this.client.post(`/notifications/${id}/archive`),
+    delete: (id: string) => this.client.delete(`/notifications/${id}`),
+    getPreferences: () => this.client.get('/notifications/preferences'),
+    updatePreferences: (data: any) => this.client.put('/notifications/preferences', data),
+    subscribePush: (subscription: any, deviceName?: string) =>
+      this.client.post('/notifications/push/subscribe', { subscription, deviceName }),
+    unsubscribePush: (subscriptionId: string) =>
+      this.client.delete(`/notifications/push/unsubscribe/${subscriptionId}`),
+    send: (data: any) => this.client.post('/notifications/send', data),
+  };
+
+  // Admin endpoints
+  admin = {
+    getUsers: (params?: any) => this.client.get('/admin/users', { params }),
+    getUserById: (id: string) => this.client.get(`/admin/users/${id}`),
+    updateUser: (id: string, data: any) => this.client.put(`/admin/users/${id}`, data),
+    deleteUser: (id: string) => this.client.delete(`/admin/users/${id}`),
+    resetUserPassword: (id: string, newPassword: string) =>
+      this.client.post(`/admin/users/${id}/reset-password`, { newPassword }),
+    unlockAccount: (id: string) => this.client.post(`/admin/users/${id}/unlock`),
+    getStats: () => this.client.get('/admin/stats'),
+    getConfig: () => this.client.get('/admin/config'),
+    updateConfig: (key: string, value: any, description?: string) =>
+      this.client.put(`/admin/config/${key}`, { value, description }),
+    getFeatureFlags: () => this.client.get('/admin/feature-flags'),
+    createFeatureFlag: (data: any) => this.client.post('/admin/feature-flags', data),
+    updateFeatureFlag: (id: string, data: any) => this.client.put(`/admin/feature-flags/${id}`, data),
+    deleteFeatureFlag: (id: string) => this.client.delete(`/admin/feature-flags/${id}`),
+    checkFeatureFlag: (key: string, userId?: string, userRole?: string) =>
+      this.client.get(`/admin/feature-flags/check/${key}`, { params: { userId, userRole } }),
+  };
+
+  // Search endpoints
+  search = {
+    global: (query: string, params?: any) =>
+      this.client.get('/search', { params: { q: query, ...params } }),
+    getHistory: (limit?: number) => this.client.get('/search/history', { params: { limit } }),
+    clearHistory: () => this.client.delete('/search/history'),
+    getSavedSearches: () => this.client.get('/search/saved'),
+    createSavedSearch: (data: any) => this.client.post('/search/saved', data),
+    updateSavedSearch: (id: string, data: any) => this.client.put(`/search/saved/${id}`, data),
+    deleteSavedSearch: (id: string) => this.client.delete(`/search/saved/${id}`),
+  };
+
+  // Reporting endpoints
+  reporting = {
+    getTemplates: (category?: string) =>
+      this.client.get('/reporting/templates', { params: { category } }),
+    createTemplate: (data: any) => this.client.post('/reporting/templates', data),
+    getReports: () => this.client.get('/reporting/reports'),
+    createReport: (data: any) => this.client.post('/reporting/reports', data),
+    updateReport: (id: string, data: any) => this.client.put(`/reporting/reports/${id}`, data),
+    deleteReport: (id: string) => this.client.delete(`/reporting/reports/${id}`),
+    executeReport: (id: string) => this.client.post(`/reporting/reports/${id}/execute`),
+    getExecutionHistory: (id: string, limit?: number) =>
+      this.client.get(`/reporting/reports/${id}/history`, { params: { limit } }),
+    getExecution: (id: string) => this.client.get(`/reporting/executions/${id}`),
+  };
+
+  // Calendar endpoints
+  calendar = {
+    getConnections: () => this.client.get('/calendar/connections'),
+    connectProvider: (data: any) => this.client.post('/calendar/connections', data),
+    disconnectProvider: (id: string) => this.client.delete(`/calendar/connections/${id}`),
+    toggleSync: (id: string, enabled: boolean) =>
+      this.client.put(`/calendar/connections/${id}/sync`, { enabled }),
+    syncItinerary: (itineraryId: string, connectionId: string) =>
+      this.client.post(`/calendar/sync/${itineraryId}`, { connection_id: connectionId }),
+    getSyncedEvents: (connectionId: string) =>
+      this.client.get(`/calendar/connections/${connectionId}/events`),
+    exportAsICal: (itineraryId: string) =>
+      this.client.get(`/calendar/export/${itineraryId}`, { responseType: 'blob' }),
+  };
+
+  // Messaging endpoints
+  messaging = {
+    getConversations: () => this.client.get('/messaging/conversations'),
+    createConversation: (data: any) => this.client.post('/messaging/conversations', data),
+    getConversation: (id: string) => this.client.get(`/messaging/conversations/${id}`),
+    getMessages: (conversationId: string, params?: any) =>
+      this.client.get(`/messaging/conversations/${conversationId}/messages`, { params }),
+    sendMessage: (conversationId: string, data: any) =>
+      this.client.post(`/messaging/conversations/${conversationId}/messages`, data),
+    markAsRead: (conversationId: string) =>
+      this.client.put(`/messaging/conversations/${conversationId}/read`),
+    updateMessage: (id: string, content: string) =>
+      this.client.put(`/messaging/messages/${id}`, { content }),
+    deleteMessage: (id: string) => this.client.delete(`/messaging/messages/${id}`),
+    addReaction: (messageId: string, emoji: string) =>
+      this.client.post(`/messaging/messages/${messageId}/reactions`, { emoji }),
+    removeReaction: (messageId: string, emoji: string) =>
+      this.client.delete(`/messaging/messages/${messageId}/reactions/${emoji}`),
+    setTyping: (conversationId: string) =>
+      this.client.post(`/messaging/conversations/${conversationId}/typing`),
+    getTypingUsers: (conversationId: string) =>
+      this.client.get(`/messaging/conversations/${conversationId}/typing`),
   };
 
   // Health check

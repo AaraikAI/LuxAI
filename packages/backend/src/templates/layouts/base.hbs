@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{subject}}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            background-color: #f4f4f4;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+
+        .email-header {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #d4af37 0%, #f4d56c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            color: #94a3b8;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .email-body {
+            padding: 40px 30px;
+        }
+
+        .content {
+            font-size: 16px;
+            color: #475569;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 14px 32px;
+            margin: 20px 0;
+            background: linear-gradient(135deg, #d4af37 0%, #f4d56c 100%);
+            color: #1e293b;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .button:hover {
+            background: linear-gradient(135deg, #c9a431 0%, #e8c860 100%);
+        }
+
+        .email-footer {
+            background-color: #f8fafc;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .footer-text {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        .social-links {
+            margin-top: 20px;
+        }
+
+        .social-link {
+            display: inline-block;
+            margin: 0 8px;
+            color: #64748b;
+            text-decoration: none;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: #e2e8f0;
+            margin: 30px 0;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .email-header,
+            .email-body,
+            .email-footer {
+                padding: 20px;
+            }
+
+            .button {
+                display: block;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <div class="logo">LuxAI</div>
+            <div class="tagline">Designer</div>
+        </div>
+
+        <div class="email-body">
+            <div class="content">
+                {{{body}}}
+            </div>
+        </div>
+
+        <div class="email-footer">
+            <p class="footer-text">
+                &copy; {{year}} LuxAI Designer. All rights reserved.
+            </p>
+            <p class="footer-text">
+                Crafting extraordinary luxury travel experiences.
+            </p>
+            <div class="divider"></div>
+            <p class="footer-text">
+                If you have any questions, please contact us at <a href="mailto:support@luxai.com">support@luxai.com</a>
+            </p>
+            <p class="footer-text" style="margin-top: 20px; font-size: 11px;">
+                You're receiving this email because you have an account with LuxAI Designer.
+                <br>
+                To unsubscribe from these emails, <a href="{{unsubscribeUrl}}">click here</a>.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

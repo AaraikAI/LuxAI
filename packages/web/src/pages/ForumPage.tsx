@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
-import { MessageSquare, TrendingUp, Plus, Tag, Eye, ThumbsUp, Filter } from 'lucide-react';
+import { MessageSquare, TrendingUp, Plus, Tag, Eye, ThumbsUp } from 'lucide-react';
 
 interface ForumPost {
   id: string;

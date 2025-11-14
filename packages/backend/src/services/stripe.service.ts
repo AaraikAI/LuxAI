@@ -1,9 +1,8 @@
 import Stripe from 'stripe';
 import { config } from '../config';
-import { query, withTransaction } from '../db';
+import { query } from '../db';
 import { logger } from '../utils/logger';
 import { AppError } from '../middleware/errorHandler';
-import { PoolClient } from 'pg';
 
 /**
  * Stripe Payment Service
@@ -18,7 +17,7 @@ export class StripeService {
     }
 
     this.stripe = new Stripe(config.stripe.secretKey || 'sk_test_dummy', {
-      apiVersion: '2024-11-20.acacia',
+      apiVersion: '2024-11-20.acacia' as any, // Latest Stripe API version
     });
   }
 
@@ -43,8 +42,8 @@ export class StripeService {
       // Create account link for onboarding
       const accountLink = await this.stripe.accountLinks.create({
         account: account.id,
-        refresh_url: `${config.webUrl}/vendor/dashboard`,
-        return_url: `${config.webUrl}/vendor/dashboard?setup=complete`,
+        refresh_url: `${config.web.url}/vendor/dashboard`,
+        return_url: `${config.web.url}/vendor/dashboard?setup=complete`,
         type: 'account_onboarding',
       });
 

@@ -21,7 +21,7 @@ export interface VendorOnboardingRequest {
   safetyBadges?: string[];
   insuranceCoverage: number;
   insuranceExpiresAt: Date;
-  businessAddress: any;
+  businessAddress?: any;
   businessEmail: string;
   businessPhone: string;
   taxId: string;
@@ -56,7 +56,7 @@ export interface DealCreationRequest {
   description: string;
   category: string;
   subcategory?: string;
-  location: any;
+  location?: any;
   priceRange: {
     min: number;
     max: number;

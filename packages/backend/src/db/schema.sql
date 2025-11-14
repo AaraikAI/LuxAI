@@ -21,6 +21,10 @@ CREATE TABLE users (
   phone VARCHAR(50),
   kyc_status VARCHAR(50) NOT NULL DEFAULT 'pending' CHECK (kyc_status IN ('pending', 'in_progress', 'verified', 'rejected', 'expired')),
   kyc_verified_at TIMESTAMP WITH TIME ZONE,
+  two_factor_enabled BOOLEAN DEFAULT false,
+  two_factor_secret VARCHAR(255),
+  backup_codes TEXT[],
+  ip_whitelist VARCHAR(45)[],
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -536,6 +540,130 @@ CREATE INDEX idx_empty_legs_date ON empty_legs(departure_date);
 CREATE INDEX idx_empty_legs_available ON empty_legs(available_until);
 
 -- ==========================================
+-- USER SESSIONS & SECURITY
+-- ==========================================
+
+CREATE TABLE user_sessions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  token_hash VARCHAR(255) NOT NULL,
+  device_info JSONB,
+  ip_address VARCHAR(45),
+  user_agent TEXT,
+  is_trusted BOOLEAN DEFAULT false,
+  last_activity TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_user_sessions_user ON user_sessions(user_id);
+CREATE INDEX idx_user_sessions_token ON user_sessions(token_hash);
+CREATE INDEX idx_user_sessions_expires ON user_sessions(expires_at);
+
+CREATE TABLE trusted_devices (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  device_fingerprint VARCHAR(255) NOT NULL,
+  device_name VARCHAR(255),
+  device_info JSONB,
+  last_used TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_trusted_devices_user ON trusted_devices(user_id);
+CREATE INDEX idx_trusted_devices_fingerprint ON trusted_devices(device_fingerprint);
+
+-- ==========================================
+-- GDPR & COMPLIANCE
+-- ==========================================
+
+CREATE TABLE data_requests (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  type VARCHAR(50) NOT NULL CHECK (type IN ('export', 'deletion', 'correction')),
+  status VARCHAR(50) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'completed', 'failed')),
+  requested_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  completed_at TIMESTAMP WITH TIME ZONE,
+  expires_at TIMESTAMP WITH TIME ZONE, -- for download links
+  download_url VARCHAR(1000),
+  notes TEXT,
+  processed_by UUID REFERENCES users(id) ON DELETE SET NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_data_requests_user ON data_requests(user_id);
+CREATE INDEX idx_data_requests_status ON data_requests(status);
+CREATE INDEX idx_data_requests_type ON data_requests(type);
+
+CREATE TABLE consent_logs (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  consent_type VARCHAR(100) NOT NULL, -- 'necessary', 'analytics', 'marketing', 'functional'
+  granted BOOLEAN NOT NULL,
+  ip_address INET,
+  user_agent TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_consent_logs_user ON consent_logs(user_id);
+CREATE INDEX idx_consent_logs_type ON consent_logs(consent_type);
+CREATE INDEX idx_consent_logs_created ON consent_logs(created_at);
+
+CREATE TABLE privacy_policies (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  version VARCHAR(50) NOT NULL UNIQUE,
+  content TEXT NOT NULL,
+  effective_date TIMESTAMP WITH TIME ZONE NOT NULL,
+  is_active BOOLEAN DEFAULT false,
+  created_by UUID REFERENCES users(id) ON DELETE SET NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_privacy_policies_active ON privacy_policies(is_active);
+CREATE INDEX idx_privacy_policies_effective ON privacy_policies(effective_date);
+
+CREATE TABLE user_privacy_acceptances (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  policy_id UUID REFERENCES privacy_policies(id) ON DELETE CASCADE,
+  accepted_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  ip_address INET,
+  user_agent TEXT
+);
+
+CREATE INDEX idx_user_privacy_user ON user_privacy_acceptances(user_id);
+CREATE INDEX idx_user_privacy_policy ON user_privacy_acceptances(policy_id);
+
+-- ==========================================
+-- EMAIL SYSTEM
+-- ==========================================
+
+CREATE TABLE email_logs (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  to_email VARCHAR(255) NOT NULL,
+  from_email VARCHAR(255) NOT NULL,
+  subject VARCHAR(500) NOT NULL,
+  template_name VARCHAR(100),
+  template_data JSONB,
+  status VARCHAR(50) NOT NULL DEFAULT 'pending', -- pending, sent, failed, bounced
+  error_message TEXT,
+  sent_at TIMESTAMP WITH TIME ZONE,
+  opened_at TIMESTAMP WITH TIME ZONE,
+  clicked_at TIMESTAMP WITH TIME ZONE,
+  retry_count INTEGER DEFAULT 0,
+  message_id VARCHAR(255),
+  user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_email_logs_user ON email_logs(user_id);
+CREATE INDEX idx_email_logs_status ON email_logs(status);
+CREATE INDEX idx_email_logs_template ON email_logs(template_name);
+CREATE INDEX idx_email_logs_created ON email_logs(created_at);
+
+-- ==========================================
 -- FUNCTIONS & TRIGGERS
 -- ==========================================
 
@@ -566,3 +694,5 @@ CREATE TRIGGER update_documents_updated_at BEFORE UPDATE ON documents FOR EACH R
 CREATE TRIGGER update_forum_posts_updated_at BEFORE UPDATE ON forum_posts FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_aircraft_updated_at BEFORE UPDATE ON aircraft FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_empty_legs_updated_at BEFORE UPDATE ON empty_legs FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_email_logs_updated_at BEFORE UPDATE ON email_logs FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_data_requests_updated_at BEFORE UPDATE ON data_requests FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

@@ -1,0 +1,66 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  deploy:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    environment: staging
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build all packages
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Run tests
+        run: npm test
+        env:
+          NODE_ENV: test
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+
+      - name: Deploy backend to staging
+        run: |
+          echo "Deploying backend to staging..."
+          # Add your deployment commands here
+          # Examples:
+          # - Deploy to Heroku: git push heroku develop:main
+          # - Deploy to AWS: eb deploy staging
+          # - Deploy to Render: render deploy
+          # - Deploy via SSH: scp -r packages/backend/dist user@staging-server:/app
+
+      - name: Deploy frontend to staging
+        run: |
+          echo "Deploying frontend to staging..."
+          # Add your deployment commands here
+          # Examples:
+          # - Deploy to Vercel: vercel --prod
+          # - Deploy to Netlify: netlify deploy --prod
+          # - Deploy to S3: aws s3 sync packages/web/dist s3://staging-bucket
+
+      - name: Run database migrations
+        run: |
+          echo "Running database migrations on staging..."
+          # npm run db:migrate --workspace=@luxai/backend
+        env:
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+
+      - name: Notify deployment
+        run: |
+          echo "Staging deployment completed!"
+          # Add notification commands (Slack, Discord, email, etc.)

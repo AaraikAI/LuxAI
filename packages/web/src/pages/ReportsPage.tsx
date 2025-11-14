@@ -46,7 +46,7 @@ export function ReportsPage() {
     try {
       setExporting(true);
       const response = await api.reports.exportPDF(selectedItinerary);
-      const blob = new Blob([response], { type: 'application/pdf' });
+      const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -69,7 +69,7 @@ export function ReportsPage() {
     try {
       setExporting(true);
       const response = await api.reports.exportCSV(selectedItinerary);
-      const blob = new Blob([response], { type: 'text/csv' });
+      const blob = new Blob([response.data], { type: 'text/csv' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;

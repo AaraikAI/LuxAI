@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import authRoutes from './auth.routes';
+import twoFactorRoutes from './twoFactor.routes';
 import itineraryRoutes from './itinerary.routes';
 import kycRoutes from './kyc.routes';
 import aviationRoutes from './aviation.routes';
@@ -14,11 +15,26 @@ import gdsRoutes from './gds.routes';
 import forumRoutes from './forum.routes';
 import analyticsRoutes from './analytics.routes';
 import reportsRoutes from './reports.routes';
+import gdprRoutes from './gdpr.routes';
+import sessionRoutes from './session.routes';
+import securityRoutes from './security.routes';
+import samlRoutes from './saml.routes';
+import queueRoutes from './queue.routes';
+import notificationRoutes from './notification.routes';
+import adminRoutes from './admin.routes';
+import searchRoutes from './search.routes';
+import reportingRoutes from './reporting.routes';
+import calendarRoutes from './calendar.routes';
+import messagingRoutes from './messaging.routes';
+import i18nRoutes from './i18n.routes';
+import vendorAdvancedRoutes from './vendorAdvanced.routes';
+import socialRoutes from './social.routes';
+import cmsRoutes from './cms.routes';
 
 const router = Router();
 
 // Health check
-router.get('/health', (req, res) => {
+router.get('/health', (_req, res) => {
   res.json({
     success: true,
     data: {
@@ -31,6 +47,7 @@ router.get('/health', (req, res) => {
 
 // API routes
 router.use('/auth', authRoutes);
+router.use('/two-factor', twoFactorRoutes);
 router.use('/itineraries', itineraryRoutes);
 router.use('/kyc', kycRoutes);
 router.use('/aviation', aviationRoutes);
@@ -45,5 +62,20 @@ router.use('/gds', gdsRoutes);
 router.use('/forum', forumRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/reports', reportsRoutes);
+router.use('/gdpr', gdprRoutes);
+router.use('/sessions', sessionRoutes);
+router.use('/security', securityRoutes);
+router.use('/saml', samlRoutes);
+router.use('/queue', queueRoutes);
+router.use('/notifications', notificationRoutes);
+router.use('/admin', adminRoutes);
+router.use('/search', searchRoutes);
+router.use('/reporting', reportingRoutes);
+router.use('/calendar', calendarRoutes);
+router.use('/messaging', messagingRoutes);
+router.use('/i18n', i18nRoutes);
+router.use('/vendor-advanced', vendorAdvancedRoutes);
+router.use('/social', socialRoutes);
+router.use('/cms', cmsRoutes);
 
 export default router;

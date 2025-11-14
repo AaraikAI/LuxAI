@@ -85,6 +85,12 @@ export const config = {
   // Email
   email: {
     sendgridApiKey: process.env.SENDGRID_API_KEY || '',
+    smtpHost: process.env.SMTP_HOST || '',
+    smtpPort: process.env.SMTP_PORT || '587',
+    smtpSecure: process.env.SMTP_SECURE === 'true',
+    smtpUser: process.env.SMTP_USER || '',
+    smtpPassword: process.env.SMTP_PASSWORD || '',
+    fromEmail: process.env.FROM_EMAIL || 'noreply@luxai.com',
     supportEmail: process.env.SUPPORT_EMAIL || 'support@luxai.example.com',
   },
 
@@ -94,9 +100,18 @@ export const config = {
     firebaseProjectId: process.env.FIREBASE_PROJECT_ID || '',
   },
 
+  // Web Push (VAPID)
+  webPush: {
+    publicKey: process.env.VAPID_PUBLIC_KEY || '',
+    privateKey: process.env.VAPID_PRIVATE_KEY || '',
+    subject: process.env.VAPID_SUBJECT || 'mailto:support@luxai.com',
+  },
+
   // URLs
   apiUrl: process.env.API_URL || 'http://localhost:3000',
-  webUrl: process.env.WEB_URL || 'http://localhost:5173',
+  web: {
+    url: process.env.WEB_URL || 'http://localhost:5173',
+  },
 
   // DocuSign
   docusign: {
