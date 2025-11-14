@@ -26,6 +26,10 @@ import searchRoutes from './search.routes';
 import reportingRoutes from './reporting.routes';
 import calendarRoutes from './calendar.routes';
 import messagingRoutes from './messaging.routes';
+import i18nRoutes from './i18n.routes';
+import vendorAdvancedRoutes from './vendorAdvanced.routes';
+import socialRoutes from './social.routes';
+import cmsRoutes from './cms.routes';
 
 const router = Router();
 
@@ -69,5 +73,9 @@ router.use('/search', searchRoutes);
 router.use('/reporting', reportingRoutes);
 router.use('/calendar', calendarRoutes);
 router.use('/messaging', messagingRoutes);
+router.use('/i18n', i18nRoutes);
+router.use('/vendor-advanced', vendorAdvancedRoutes);
+router.use('/social', socialRoutes);
+router.use('/cms', cmsRoutes);
 
 export default router;
