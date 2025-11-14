@@ -45,6 +45,7 @@
     "speakeasy": "^2.0.0",
     "stripe": "^14.10.0",
     "uuid": "^9.0.1",
+    "web-push": "^3.6.7",
     "zod": "^3.22.4"
   },
   "devDependencies": {
@@ -64,6 +65,7 @@
     "@types/speakeasy": "^2.0.10",
     "@types/supertest": "^6.0.3",
     "@types/uuid": "^9.0.7",
+    "@types/web-push": "^3.6.3",
     "@typescript-eslint/eslint-plugin": "^6.17.0",
     "@typescript-eslint/parser": "^6.17.0",
     "eslint": "^8.56.0",

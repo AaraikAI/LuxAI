@@ -226,6 +226,45 @@ class ApiClient {
     getAlerts: (limit?: number) => this.client.get('/security/alerts', { params: { limit } }),
   };
 
+  // Notification endpoints
+  notifications = {
+    list: (params?: { limit?: number; offset?: number; unreadOnly?: boolean; type?: string }) =>
+      this.client.get('/notifications', { params }),
+    getUnreadCount: () => this.client.get('/notifications/unread-count'),
+    markAsRead: (id: string) => this.client.put(`/notifications/${id}/read`),
+    markAllAsRead: () => this.client.put('/notifications/read-all'),
+    archive: (id: string) => this.client.post(`/notifications/${id}/archive`),
+    delete: (id: string) => this.client.delete(`/notifications/${id}`),
+    getPreferences: () => this.client.get('/notifications/preferences'),
+    updatePreferences: (data: any) => this.client.put('/notifications/preferences', data),
+    subscribePush: (subscription: any, deviceName?: string) =>
+      this.client.post('/notifications/push/subscribe', { subscription, deviceName }),
+    unsubscribePush: (subscriptionId: string) =>
+      this.client.delete(`/notifications/push/unsubscribe/${subscriptionId}`),
+    send: (data: any) => this.client.post('/notifications/send', data),
+  };
+
+  // Admin endpoints
+  admin = {
+    getUsers: (params?: any) => this.client.get('/admin/users', { params }),
+    getUserById: (id: string) => this.client.get(`/admin/users/${id}`),
+    updateUser: (id: string, data: any) => this.client.put(`/admin/users/${id}`, data),
+    deleteUser: (id: string) => this.client.delete(`/admin/users/${id}`),
+    resetUserPassword: (id: string, newPassword: string) =>
+      this.client.post(`/admin/users/${id}/reset-password`, { newPassword }),
+    unlockAccount: (id: string) => this.client.post(`/admin/users/${id}/unlock`),
+    getStats: () => this.client.get('/admin/stats'),
+    getConfig: () => this.client.get('/admin/config'),
+    updateConfig: (key: string, value: any, description?: string) =>
+      this.client.put(`/admin/config/${key}`, { value, description }),
+    getFeatureFlags: () => this.client.get('/admin/feature-flags'),
+    createFeatureFlag: (data: any) => this.client.post('/admin/feature-flags', data),
+    updateFeatureFlag: (id: string, data: any) => this.client.put(`/admin/feature-flags/${id}`, data),
+    deleteFeatureFlag: (id: string) => this.client.delete(`/admin/feature-flags/${id}`),
+    checkFeatureFlag: (key: string, userId?: string, userRole?: string) =>
+      this.client.get(`/admin/feature-flags/check/${key}`, { params: { userId, userRole } }),
+  };
+
   // Health check
   health = () => this.client.get('/health');
 }

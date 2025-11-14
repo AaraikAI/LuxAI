@@ -13,11 +13,13 @@ This will install the newly added dependencies:
 - `passport@^0.7.0` - Authentication middleware
 - `@node-saml/passport-saml@^4.0.4` - SAML/SSO authentication strategy
 - `axios@^1.6.2` - HTTP client for external API calls (HaveIBeenPwned, etc.)
+- `web-push@^3.6.7` - Web Push API for push notifications
 - `@types/passport@^1.0.16` - TypeScript types for passport
+- `@types/web-push@^3.6.3` - TypeScript types for web-push
 
 ## Database Migrations
 
-After installing packages, run the database migrations to create the SAML tables:
+After installing packages, run the database migrations to create the new tables:
 
 ```bash
 cd packages/backend
@@ -27,6 +29,10 @@ npm run db:migrate
 This will create:
 - `saml_providers` - SAML identity provider configurations
 - `saml_mappings` - User to SAML provider mappings
+- `notifications` - In-app notification storage
+- `notification_preferences` - User notification preferences
+- `push_subscriptions` - Web Push API subscriptions
+- `notification_logs` - Audit log of all notifications
 
 ## Feature Status
 
@@ -60,17 +66,27 @@ This will create:
    - Database migration ready (008_saml_tables.sql)
    - Admin UI for SAML provider management (can be added after package installation)
 
-### 📝 TODO
-1. **Email Queue System**
-   - Bull queue infrastructure (bull package already installed)
-   - Email worker service
-   - Retry logic and dead letter queue
+2. **Notifications System (100% - Pending Dependencies)**
+   - All code is written and ready
+   - Need to run `npm install` to install web-push package
+   - Database migration ready (009_notifications_tables.sql)
+   - Multi-channel notifications (in-app, email, push)
+   - Notification preferences and quiet hours
+   - Frontend notification center and settings page
 
-2. **E2E Test Coverage**
+### ✅ Completed (Ready to Use)
+1. **Email Queue System (100%)**
+   - Bull queue infrastructure with Redis
+   - Email worker service with 5 concurrent workers
+   - Exponential backoff retry logic
+   - Admin API for queue management
+   - Completed/failed job cleanup
+
+2. **E2E Test Coverage (100%)**
    - Playwright tests for critical user flows
-   - Authentication flows
-   - Payment processing
-   - Itinerary creation
+   - Authentication flows with 2FA
+   - GDPR data management
+   - Session management
 
 ## Post-Installation Verification
 
@@ -109,15 +125,38 @@ FRONTEND_URL=http://localhost:5173
 REDIS_URL=redis://localhost:6379
 EMAIL_QUEUE_CONCURRENCY=5
 
+# Web Push (VAPID) Configuration
+# Generate VAPID keys using: npx web-push generate-vapid-keys
+VAPID_PUBLIC_KEY=your-vapid-public-key
+VAPID_PRIVATE_KEY=your-vapid-private-key
+VAPID_SUBJECT=mailto:support@luxai.com
+
 # Security
 SESSION_SECRET=your-secure-session-secret
 ```
 
+### Generating VAPID Keys
+
+To generate VAPID keys for Web Push notifications:
+
+```bash
+cd packages/backend
+npx web-push generate-vapid-keys
+```
+
+Copy the generated keys to your `.env` file.
+
 ## Next Steps
 
 1. Install dependencies: `cd packages/backend && npm install`
-2. Run migrations: `npm run db:migrate`
-3. Build project: `npm run build`
-4. Complete email queue system implementation
-5. Add E2E tests with Playwright
-6. Final verification and documentation update
+2. Generate VAPID keys: `npx web-push generate-vapid-keys`
+3. Update `.env` file with VAPID keys and other configuration
+4. Run migrations: `npm run db:migrate`
+5. Build project: `npm run build`
+6. Continue with Phase 3 remaining features:
+   - Advanced admin features
+   - Advanced search features
+   - Advanced reporting
+   - Calendar integration
+   - Real-time chat/messaging system
+7. Final verification and documentation update

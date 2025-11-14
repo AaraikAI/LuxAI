@@ -20,6 +20,8 @@ import sessionRoutes from './session.routes';
 import securityRoutes from './security.routes';
 // import samlRoutes from './saml.routes'; // Requires 'npm install' for passport packages
 import queueRoutes from './queue.routes';
+import notificationRoutes from './notification.routes';
+import adminRoutes from './admin.routes';
 
 const router = Router();
 
@@ -57,5 +59,7 @@ router.use('/sessions', sessionRoutes);
 router.use('/security', securityRoutes);
 // router.use('/saml', samlRoutes); // Uncomment after running 'npm install' in packages/backend
 router.use('/queue', queueRoutes);
+router.use('/notifications', notificationRoutes);
+router.use('/admin', adminRoutes);
 
 export default router;

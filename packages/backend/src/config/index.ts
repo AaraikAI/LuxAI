@@ -100,6 +100,13 @@ export const config = {
     firebaseProjectId: process.env.FIREBASE_PROJECT_ID || '',
   },
 
+  // Web Push (VAPID)
+  webPush: {
+    publicKey: process.env.VAPID_PUBLIC_KEY || '',
+    privateKey: process.env.VAPID_PRIVATE_KEY || '',
+    subject: process.env.VAPID_SUBJECT || 'mailto:support@luxai.com',
+  },
+
   // URLs
   apiUrl: process.env.API_URL || 'http://localhost:3000',
   web: {
