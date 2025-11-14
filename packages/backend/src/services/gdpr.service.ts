@@ -653,9 +653,16 @@ export class GDPRService {
         approvedBy: adminId,
       });
 
-      // TODO: Trigger background job to process the request
-      // For export: generate data export file
-      // For deletion: anonymize user data
+      // Trigger background job to process the request
+      const { queueDataExport, queueDataDeletion } = await import('../queues/gdpr.queue');
+
+      if (request.request_type === 'export') {
+        await queueDataExport(requestId, request.user_id);
+        logger.info('Data export job queued for background processing', { requestId });
+      } else if (request.request_type === 'deletion') {
+        await queueDataDeletion(requestId, request.user_id);
+        logger.info('Data deletion job queued for background processing', { requestId });
+      }
     } catch (error) {
       logger.error('Failed to approve data request', { error, requestId, adminId });
       throw error;

@@ -18,7 +18,7 @@ import reportsRoutes from './reports.routes';
 import gdprRoutes from './gdpr.routes';
 import sessionRoutes from './session.routes';
 import securityRoutes from './security.routes';
-// import samlRoutes from './saml.routes'; // Requires 'npm install' for passport packages
+import samlRoutes from './saml.routes';
 import queueRoutes from './queue.routes';
 import notificationRoutes from './notification.routes';
 import adminRoutes from './admin.routes';
@@ -65,7 +65,7 @@ router.use('/reports', reportsRoutes);
 router.use('/gdpr', gdprRoutes);
 router.use('/sessions', sessionRoutes);
 router.use('/security', securityRoutes);
-// router.use('/saml', samlRoutes); // Uncomment after running 'npm install' in packages/backend
+router.use('/saml', samlRoutes);
 router.use('/queue', queueRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/admin', adminRoutes);

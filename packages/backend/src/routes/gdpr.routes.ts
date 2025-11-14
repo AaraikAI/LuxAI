@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { authenticate, AuthRequest } from '../middleware/auth';
-import { asyncHandler } from '../middleware/errorHandler';
+import { asyncHandler, AppError } from '../middleware/errorHandler';
 import { gdprService } from '../services/gdpr.service';
 
 const router = Router();
@@ -52,6 +52,60 @@ router.get(
       success: true,
       data: status,
     });
+  })
+);
+
+/**
+ * GET /gdpr/download/:requestId
+ * Download completed data export
+ */
+router.get(
+  '/download/:requestId',
+  authenticate,
+  asyncHandler(async (req: AuthRequest, res) => {
+    const { requestId } = req.params;
+    const { query: db } = await import('../db');
+
+    // Get the export data
+    const result = await db(
+      `SELECT ef.data, ef.expires_at, dr.user_id, dr.status
+       FROM gdpr_export_files ef
+       JOIN data_requests dr ON ef.request_id = dr.id
+       WHERE ef.request_id = $1`,
+      [requestId]
+    );
+
+    if (result.rows.length === 0) {
+      throw new AppError(404, 'EXPORT_NOT_FOUND', 'Export file not found or expired');
+    }
+
+    const exportFile = result.rows[0];
+
+    // Verify the export belongs to the authenticated user
+    if (exportFile.user_id !== req.user!.id) {
+      throw new AppError(403, 'FORBIDDEN', 'You do not have permission to access this export');
+    }
+
+    // Check if export is completed
+    if (exportFile.status !== 'completed') {
+      throw new AppError(400, 'EXPORT_NOT_READY', 'Export is not yet ready for download');
+    }
+
+    // Check if expired
+    if (new Date(exportFile.expires_at) < new Date()) {
+      throw new AppError(410, 'EXPORT_EXPIRED', 'Export file has expired (7-day limit)');
+    }
+
+    // Update downloaded_at timestamp
+    await db(
+      'UPDATE gdpr_export_files SET downloaded_at = NOW() WHERE request_id = $1',
+      [requestId]
+    );
+
+    // Send the file
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Disposition', `attachment; filename="gdpr-export-${requestId}.json"`);
+    res.send(exportFile.data);
   })
 );
 

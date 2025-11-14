@@ -1,6 +1,7 @@
 import { getPool } from '../db';
 import { logger } from '../utils/logger';
 import { format } from 'date-fns';
+import PDFDocument from 'pdfkit';
 
 export interface ItineraryReportData {
   itinerary: any;
@@ -97,18 +98,183 @@ export class ReportsService {
   }
 
   /**
-   * Export itinerary to PDF (placeholder)
+   * Export itinerary to PDF
    */
   async exportToPDF(itineraryId: string): Promise<Buffer> {
     try {
       const reportData = await this.generateItineraryReport(itineraryId);
-
-      // TODO: Implement actual PDF generation using a library like pdfkit or puppeteer
-      // For now, return mock data
       logger.info('Generating PDF report', { itineraryId });
 
-      const mockPDF = Buffer.from('Mock PDF content for itinerary: ' + reportData.itinerary.title);
-      return mockPDF;
+      return new Promise((resolve, reject) => {
+        const doc = new PDFDocument({ size: 'A4', margin: 50 });
+        const chunks: Buffer[] = [];
+
+        // Collect PDF chunks
+        doc.on('data', (chunk) => chunks.push(chunk));
+        doc.on('end', () => resolve(Buffer.concat(chunks)));
+        doc.on('error', reject);
+
+        // Add header
+        doc.fontSize(24)
+           .fillColor('#1a1a1a')
+           .text('Luxury Travel Itinerary', { align: 'center' });
+
+        doc.moveDown(0.5);
+        doc.fontSize(18)
+           .fillColor('#2563eb')
+           .text(reportData.itinerary.title, { align: 'center' });
+
+        doc.moveDown(1);
+
+        // Add horizontal line
+        doc.moveTo(50, doc.y)
+           .lineTo(545, doc.y)
+           .strokeColor('#e5e7eb')
+           .stroke();
+
+        doc.moveDown(1);
+
+        // Client Information
+        doc.fontSize(14)
+           .fillColor('#1a1a1a')
+           .text('Client Information', { underline: true });
+        doc.moveDown(0.5);
+        doc.fontSize(10)
+           .fillColor('#4b5563')
+           .text(`Name: ${reportData.client?.full_name || 'N/A'}`)
+           .text(`Email: ${reportData.client?.email || 'N/A'}`)
+           .text(`Travel Dates: ${format(new Date(reportData.itinerary.startDate), 'MMM dd, yyyy')} - ${format(new Date(reportData.itinerary.endDate), 'MMM dd, yyyy')}`);
+
+        doc.moveDown(1);
+
+        // Destinations
+        if (reportData.destinations.length > 0) {
+          doc.fontSize(14)
+             .fillColor('#1a1a1a')
+             .text('Destinations', { underline: true });
+          doc.moveDown(0.5);
+
+          reportData.destinations.forEach((dest: any, index: number) => {
+            doc.fontSize(12)
+               .fillColor('#2563eb')
+               .text(`${index + 1}. ${dest.name}, ${dest.country}`);
+            doc.fontSize(10)
+               .fillColor('#4b5563')
+               .text(`   Arrival: ${format(new Date(dest.arrivalDate), 'MMM dd, yyyy')}`)
+               .text(`   Departure: ${format(new Date(dest.departureDate), 'MMM dd, yyyy')}`);
+            if (dest.notes) {
+              doc.text(`   Notes: ${dest.notes}`);
+            }
+            doc.moveDown(0.5);
+          });
+          doc.moveDown(0.5);
+        }
+
+        // Activities
+        if (reportData.activities.length > 0) {
+          doc.fontSize(14)
+             .fillColor('#1a1a1a')
+             .text('Activities', { underline: true });
+          doc.moveDown(0.5);
+
+          reportData.activities.forEach((activity: any) => {
+            doc.fontSize(11)
+               .fillColor('#2563eb')
+               .text(`• ${activity.name}`);
+            doc.fontSize(9)
+               .fillColor('#4b5563')
+               .text(`  ${format(new Date(activity.startTime), 'MMM dd, yyyy HH:mm')} - ${format(new Date(activity.endTime), 'HH:mm')}`);
+            if (activity.location?.name) {
+              doc.text(`  Location: ${activity.location.name}`);
+            }
+            if (activity.cost) {
+              doc.text(`  Cost: $${activity.cost.toLocaleString()}`);
+            }
+            doc.moveDown(0.3);
+          });
+          doc.moveDown(0.5);
+        }
+
+        // Accommodations
+        if (reportData.accommodations.length > 0) {
+          doc.fontSize(14)
+             .fillColor('#1a1a1a')
+             .text('Accommodations', { underline: true });
+          doc.moveDown(0.5);
+
+          reportData.accommodations.forEach((acc: any) => {
+            doc.fontSize(11)
+               .fillColor('#2563eb')
+               .text(`• ${acc.name}`);
+            doc.fontSize(9)
+               .fillColor('#4b5563')
+               .text(`  Check-in: ${format(new Date(acc.checkIn), 'MMM dd, yyyy')}`)
+               .text(`  Check-out: ${format(new Date(acc.checkOut), 'MMM dd, yyyy')}`)
+               .text(`  Rooms: ${acc.rooms}`);
+            if (acc.cost) {
+              doc.text(`  Cost: $${acc.cost.toLocaleString()}`);
+            }
+            doc.moveDown(0.3);
+          });
+          doc.moveDown(0.5);
+        }
+
+        // Transportation
+        if (reportData.transportation.length > 0) {
+          doc.fontSize(14)
+             .fillColor('#1a1a1a')
+             .text('Transportation', { underline: true });
+          doc.moveDown(0.5);
+
+          reportData.transportation.forEach((transport: any) => {
+            doc.fontSize(11)
+               .fillColor('#2563eb')
+               .text(`• ${transport.type.toUpperCase()}: ${transport.from} → ${transport.to}`);
+            doc.fontSize(9)
+               .fillColor('#4b5563')
+               .text(`  Departure: ${format(new Date(transport.departureTime), 'MMM dd, yyyy HH:mm')}`);
+            if (transport.arrivalTime) {
+              doc.text(`  Arrival: ${format(new Date(transport.arrivalTime), 'MMM dd, yyyy HH:mm')}`);
+            }
+            if (transport.cost) {
+              doc.text(`  Cost: $${transport.cost.toLocaleString()}`);
+            }
+            doc.moveDown(0.3);
+          });
+          doc.moveDown(0.5);
+        }
+
+        // Financial Summary
+        doc.fontSize(14)
+           .fillColor('#1a1a1a')
+           .text('Financial Summary', { underline: true });
+        doc.moveDown(0.5);
+        doc.fontSize(12)
+           .fillColor('#16a34a')
+           .text(`Total Cost: $${reportData.totalCost.toLocaleString()}`, { bold: true });
+
+        // Sustainability
+        if (reportData.sustainability?.carbon_footprint_kg) {
+          doc.moveDown(1);
+          doc.fontSize(14)
+             .fillColor('#1a1a1a')
+             .text('Sustainability', { underline: true });
+          doc.moveDown(0.5);
+          doc.fontSize(10)
+             .fillColor('#4b5563')
+             .text(`Carbon Footprint: ${reportData.sustainability.carbon_footprint_kg.toFixed(2)} kg CO₂`);
+        }
+
+        // Footer
+        doc.moveDown(2);
+        doc.fontSize(8)
+           .fillColor('#9ca3af')
+           .text(`Generated on ${format(new Date(), 'MMMM dd, yyyy')}`, { align: 'center' })
+           .text('LuxAI Designer - Luxury Travel Platform', { align: 'center' });
+
+        // Finalize PDF
+        doc.end();
+      });
     } catch (error) {
       logger.error('Failed to export to PDF', error);
       throw new Error('Failed to export to PDF');

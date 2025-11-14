@@ -60,7 +60,7 @@ export class NotificationService {
   constructor() {
     // Configure web push (if VAPID keys are available)
     if (config.webPush?.publicKey && config.webPush?.privateKey) {
-      webpush.setVAPIDDetails(
+      webpush.setVapidDetails(
         'mailto:support@luxai.com',
         config.webPush.publicKey,
         config.webPush.privateKey
@@ -499,9 +499,41 @@ export class NotificationService {
       return false;
     }
 
-    // TODO: Implement proper timezone-aware quiet hours check
-    // For now, return false
-    return false;
+    try {
+      // Get current time in user's timezone
+      const userTimezone = (preferences as any).timezone || 'UTC';
+      const now = new Date();
+
+      // Extract hour and minute from current time in user's timezone
+      const currentHour = parseInt(now.toLocaleString('en-US', { hour: '2-digit', hour12: false, timeZone: userTimezone }));
+      const currentMinute = parseInt(now.toLocaleString('en-US', { minute: '2-digit', timeZone: userTimezone }));
+      const currentTimeInMinutes = currentHour * 60 + currentMinute;
+
+      // Parse quiet hours start and end (format: "HH:MM:SS" or "HH:MM")
+      const startParts = preferences.quiet_hours_start.split(':');
+      const startHour = parseInt(startParts[0]);
+      const startMinute = parseInt(startParts[1] || '0');
+      const startTimeInMinutes = startHour * 60 + startMinute;
+
+      const endParts = preferences.quiet_hours_end.split(':');
+      const endHour = parseInt(endParts[0]);
+      const endMinute = parseInt(endParts[1] || '0');
+      const endTimeInMinutes = endHour * 60 + endMinute;
+
+      // Check if current time is within quiet hours
+      // Handle case where quiet hours span midnight (e.g., 22:00 to 06:00)
+      if (startTimeInMinutes <= endTimeInMinutes) {
+        // Normal case: quiet hours within same day (e.g., 14:00 to 18:00)
+        return currentTimeInMinutes >= startTimeInMinutes && currentTimeInMinutes < endTimeInMinutes;
+      } else {
+        // Spanning midnight: quiet hours cross day boundary (e.g., 22:00 to 06:00)
+        return currentTimeInMinutes >= startTimeInMinutes || currentTimeInMinutes < endTimeInMinutes;
+      }
+    } catch (error: any) {
+      logger.error('Failed to check quiet hours', { error: error.message });
+      // If there's an error, don't block notifications
+      return false;
+    }
   }
 
   /**
