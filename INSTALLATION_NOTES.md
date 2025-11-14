@@ -33,6 +33,22 @@ This will create:
 - `notification_preferences` - User notification preferences
 - `push_subscriptions` - Web Push API subscriptions
 - `notification_logs` - Audit log of all notifications
+- `system_config` - System-wide configuration settings
+- `feature_flags` - Feature flags for gradual rollout
+- `search_history` - User search history
+- `saved_searches` - Saved search filters
+- `report_templates` - Reusable report templates
+- `custom_reports` - User custom reports with scheduling
+- `report_executions` - Report execution history
+- `calendar_connections` - Calendar provider connections
+- `synced_calendar_events` - Events synced to external calendars
+- `calendar_sync_log` - Calendar sync audit log
+- `conversations` - Chat conversations
+- `conversation_participants` - Conversation members
+- `messages` - Chat messages
+- `message_read_receipts` - Message read status
+- `message_reactions` - Message emoji reactions
+- `typing_indicators` - Real-time typing status
 
 ## Feature Status
 
@@ -74,7 +90,7 @@ This will create:
    - Notification preferences and quiet hours
    - Frontend notification center and settings page
 
-### ✅ Completed (Ready to Use)
+### ✅ Completed (Ready to Use - No Dependencies)
 1. **Email Queue System (100%)**
    - Bull queue infrastructure with Redis
    - Email worker service with 5 concurrent workers
@@ -87,6 +103,37 @@ This will create:
    - Authentication flows with 2FA
    - GDPR data management
    - Session management
+
+3. **Advanced Search Features (100%)**
+   - Global search across all entities (users, itineraries, bookings, vendors)
+   - Full-text search with PostgreSQL
+   - Search history tracking
+   - Saved search filters
+   - Search analytics
+
+4. **Advanced Reporting (100%)**
+   - Custom report builder with dynamic queries
+   - Report templates (5 system templates included)
+   - Scheduled reports with cron expressions
+   - Report execution history
+   - Export to multiple formats
+
+5. **Calendar Integration (100%)**
+   - Google Calendar, Outlook, Apple iCal support
+   - OAuth-based calendar connections
+   - Bi-directional sync capabilities
+   - iCal file export (.ics format)
+   - Sync history and audit logs
+
+6. **Real-time Chat/Messaging (100%)**
+   - Direct, group, and support conversations
+   - Real-time message delivery
+   - Message read receipts
+   - Emoji reactions
+   - Typing indicators
+   - Message threading (reply-to)
+   - File/image attachments support
+   - Conversation muting
 
 ## Post-Installation Verification
 

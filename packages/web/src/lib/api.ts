@@ -265,6 +265,72 @@ class ApiClient {
       this.client.get(`/admin/feature-flags/check/${key}`, { params: { userId, userRole } }),
   };
 
+  // Search endpoints
+  search = {
+    global: (query: string, params?: any) =>
+      this.client.get('/search', { params: { q: query, ...params } }),
+    getHistory: (limit?: number) => this.client.get('/search/history', { params: { limit } }),
+    clearHistory: () => this.client.delete('/search/history'),
+    getSavedSearches: () => this.client.get('/search/saved'),
+    createSavedSearch: (data: any) => this.client.post('/search/saved', data),
+    updateSavedSearch: (id: string, data: any) => this.client.put(`/search/saved/${id}`, data),
+    deleteSavedSearch: (id: string) => this.client.delete(`/search/saved/${id}`),
+  };
+
+  // Reporting endpoints
+  reporting = {
+    getTemplates: (category?: string) =>
+      this.client.get('/reporting/templates', { params: { category } }),
+    createTemplate: (data: any) => this.client.post('/reporting/templates', data),
+    getReports: () => this.client.get('/reporting/reports'),
+    createReport: (data: any) => this.client.post('/reporting/reports', data),
+    updateReport: (id: string, data: any) => this.client.put(`/reporting/reports/${id}`, data),
+    deleteReport: (id: string) => this.client.delete(`/reporting/reports/${id}`),
+    executeReport: (id: string) => this.client.post(`/reporting/reports/${id}/execute`),
+    getExecutionHistory: (id: string, limit?: number) =>
+      this.client.get(`/reporting/reports/${id}/history`, { params: { limit } }),
+    getExecution: (id: string) => this.client.get(`/reporting/executions/${id}`),
+  };
+
+  // Calendar endpoints
+  calendar = {
+    getConnections: () => this.client.get('/calendar/connections'),
+    connectProvider: (data: any) => this.client.post('/calendar/connections', data),
+    disconnectProvider: (id: string) => this.client.delete(`/calendar/connections/${id}`),
+    toggleSync: (id: string, enabled: boolean) =>
+      this.client.put(`/calendar/connections/${id}/sync`, { enabled }),
+    syncItinerary: (itineraryId: string, connectionId: string) =>
+      this.client.post(`/calendar/sync/${itineraryId}`, { connection_id: connectionId }),
+    getSyncedEvents: (connectionId: string) =>
+      this.client.get(`/calendar/connections/${connectionId}/events`),
+    exportAsICal: (itineraryId: string) =>
+      this.client.get(`/calendar/export/${itineraryId}`, { responseType: 'blob' }),
+  };
+
+  // Messaging endpoints
+  messaging = {
+    getConversations: () => this.client.get('/messaging/conversations'),
+    createConversation: (data: any) => this.client.post('/messaging/conversations', data),
+    getConversation: (id: string) => this.client.get(`/messaging/conversations/${id}`),
+    getMessages: (conversationId: string, params?: any) =>
+      this.client.get(`/messaging/conversations/${conversationId}/messages`, { params }),
+    sendMessage: (conversationId: string, data: any) =>
+      this.client.post(`/messaging/conversations/${conversationId}/messages`, data),
+    markAsRead: (conversationId: string) =>
+      this.client.put(`/messaging/conversations/${conversationId}/read`),
+    updateMessage: (id: string, content: string) =>
+      this.client.put(`/messaging/messages/${id}`, { content }),
+    deleteMessage: (id: string) => this.client.delete(`/messaging/messages/${id}`),
+    addReaction: (messageId: string, emoji: string) =>
+      this.client.post(`/messaging/messages/${messageId}/reactions`, { emoji }),
+    removeReaction: (messageId: string, emoji: string) =>
+      this.client.delete(`/messaging/messages/${messageId}/reactions/${emoji}`),
+    setTyping: (conversationId: string) =>
+      this.client.post(`/messaging/conversations/${conversationId}/typing`),
+    getTypingUsers: (conversationId: string) =>
+      this.client.get(`/messaging/conversations/${conversationId}/typing`),
+  };
+
   // Health check
   health = () => this.client.get('/health');
 }

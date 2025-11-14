@@ -22,6 +22,10 @@ import securityRoutes from './security.routes';
 import queueRoutes from './queue.routes';
 import notificationRoutes from './notification.routes';
 import adminRoutes from './admin.routes';
+import searchRoutes from './search.routes';
+import reportingRoutes from './reporting.routes';
+import calendarRoutes from './calendar.routes';
+import messagingRoutes from './messaging.routes';
 
 const router = Router();
 
@@ -61,5 +65,9 @@ router.use('/security', securityRoutes);
 router.use('/queue', queueRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/admin', adminRoutes);
+router.use('/search', searchRoutes);
+router.use('/reporting', reportingRoutes);
+router.use('/calendar', calendarRoutes);
+router.use('/messaging', messagingRoutes);
 
 export default router;
